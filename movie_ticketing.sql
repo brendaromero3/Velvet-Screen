@@ -4,159 +4,147 @@
 -- ============================================================
 
 CREATE TABLE persons (
+    person_id   integer NOT NULL CHECK (person_id > 0),
     name        text NOT NULL,
     birthdate   text NOT NULL,
     biography   text,
-    PRIMARY KEY (name, birthdate)
+    PRIMARY KEY (person_id)
 );
 
 CREATE TABLE awards (
+    award_id        integer NOT NULL CHECK (award_id > 0),
     award_title     text NOT NULL,
     year            integer NOT NULL,
-    PRIMARY KEY (award_title, year)
+    PRIMARY KEY (award_id)
 );
 
 CREATE TABLE awarded (
-    name            text NOT NULL REFERENCES persons(name),
-    birthdate       text NOT NULL REFERENCES persons(birthdate),
-    award           text NOT NULL REFERENCES awards(award_title),
-    year            integer NOT NULL REFERENCES awards(year),
-    title           text NOT NULL REFERENCES movies(title),
-    release_date    date NOT NULL REFERENCES movies(release_date),
-    PRIMARY KEY (name, birthdate, award_title, year, title, release_date)
+    person_id   integer NOT NULL REFERENCES persons(person_id),
+    award_id    integer NOT NULL REFERENCES awards(award_id),
+    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    PRIMARY KEY (person_id, award_id, movie_id)
 );
 
 CREATE TABLE directors (
-    name            text NOT NULL REFERENCES persons(name),
-    birthdate       text NOT NULL REFERENCES persons(birthdate),
-    title           text NOT NULL REFERENCES movies(title),
-    release_date    date NOT NULL REFERENCES movies(release_date),
-    PRIMARY KEY (name, birthdate, title, release_date)
+    person_id   integer NOT NULL REFERENCES persons(person_id),
+    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    PRIMARY KEY (person_id, movie_id)
 );
 
 CREATE TABLE actors (
-    name            text NOT NULL REFERENCES persons(name),
-    birthdate       text NOT NULL REFERENCES persons(birthdate),
+    person_id   integer NOT NULL REFERENCES persons(person_id),
+    movie_id    integer NOT NULL REFERENCES movies(movie_id),
     character_name  text,
-    title           text NOT NULL REFERENCES movies(title),
-    release_date    date NOT NULL REFERENCES movies(release_date),
-    PRIMARY KEY (name, birthdate, title, release_date)
+    PRIMARY KEY (person_id, movie_id)
 );
 
 CREATE TABLE writers (
-    name            text NOT NULL REFERENCES persons(name),
-    birthdate       text NOT NULL REFERENCES persons(birthdate),
-    title           text NOT NULL REFERENCES movies(title),
-    release_date    date NOT NULL REFERENCES movies(release_date),
-    PRIMARY KEY (name, birthdate, title, release_date)
+    person_id   integer NOT NULL REFERENCES persons(person_id),
+    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    PRIMARY KEY (person_id, movie_id)
 );
 
 CREATE TABLE producers (
-    name            text NOT NULL REFERENCES persons(name),
-    birthdate       text NOT NULL REFERENCES persons(birthdate),
-    title           text NOT NULL REFERENCES movies(title),
-    release_date    date NOT NULL REFERENCES movies(release_date),
-    PRIMARY KEY (name, birthdate, title, release_date)
+    person_id   integer NOT NULL REFERENCES persons(person_id),
+    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    PRIMARY KEY (person_id, movie_id)
 );
 
 CREATE TABLE movies (
+    movie_id            integer NOT NULL CHECK (movie_id > 0),
     title               text NOT NULL,
     major_studio        boolean NOT NULL, 
     original_language   text NOT NULL,
     release_date        date NOT NULL,
     length              integer NOT NULL CHECK (length > 0),
-    is_old              boolean NOT NULL,
-    PRIMARY KEY (title, release_date)
+    PRIMARY KEY (movie_id)
 );
 
 CREATE TABLE movies_langauges (
-    language        text NOT NULL,
-    title           text NOT NULL REFERENCES movies(title),
-    release_date    date NOT NULL REFERENCES movies(release_date),
-    PRIMARY KEY (language, title, release_date)
+    language    text NOT NULL,
+    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    PRIMARY KEY (language, movie_id)
 );
 
 CREATE TABLE movies_genre (
-    genre           text NOT NULL,
-    title           text NOT NULL REFERENCES movies(title),
-    release_date    date NOT NULL REFERENCES movies(release_date),
-    PRIMARY KEY (genre, title, release_date)
+    genre       text NOT NULL,
+    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    PRIMARY KEY (genre, movie_id)
 );
 
 CREATE TABLE screening (
-    screeningID     integer PRIMARY KEY CHECK (screeningID > 0),
-    title           text NOT NULL REFERENCES movies(title),
-    release_date    date NOT NULL REFERENCES movies(release_date),
-    theaterID       integer NOT NULL REFERENCES theater(theaterID),
-    date_time       timestamp NOT NULL
+    screening_id    integer PRIMARY KEY CHECK (screening_id > 0),
+    movie_id        integer NOT NULL REFERENCES movies(movie_id),
+    theater_id      integer NOT NULL REFERENCES theater(theater_id),
+    date_time       timestamp NOT NULL,
+    PRIMARY KEY (screening_id)
 );
 
 CREATE TABLE theater (
-    theaterID       integer PRIMARY KEY CHECK (theaterID > 0),
-    max_occupancy   integer NOT NULL
-);
-
-CREATE TABLE three_d_theaters (
-    theaterID   integer NOT NULL REFERENCES theater(theaterID)
-);
-
-CREATE TABLE fancy_sound (
-    theaterID   integer NOT NULL REFERENCES theater(theaterID)
+    theater_id      integer PRIMARY KEY CHECK (theater_id > 0),
+    max_occupancy   integer NOT NULL,
+    is_3d           boolean NOT NULL,
+    fancy_sound     boolean NOT NULL,
+    PRIMARY KEY (theater_id)
 );
 
 CREATE TABLE users (
-    email_address   text NOT NULL,
+    user_id         integer NOT NULL CHECK (user_id > 0),
+    email_address   text UNIQUE NOT NULL,
     password        text NOT NULL,
-    PRIMARY KEY (email_address, password)
+    PRIMARY KEY (user_id)
 );
 
 CREATE TABLE Reviews (
-    email_address   text NOT NULL REFERENCES users(email_address),
-    title           text NOT NULL REFERENCES movies(title),
-    release_date    date NOT NULL REFERENCES movies(release_date),
-    rating          integer NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    user_id         integer NOT NULL REFERENCES users(user_id),
+    movie_id        integer NOT NULL REFERENCES movies(movie_id),
+    rating          integer NOT NULL CHECK (rating BETWEEN 0 AND 5),
     comment         text,
-    PRIMARY KEY (email_address, title, release_date)
+    PRIMARY KEY (user_id, movie_id)
 );
 
 CREATE TABLE administrators (
-    email_address   text NOT NULL REFERENCES users(email_address),
-    theaterID       integer NOT NULL REFERENCES theater(theaterID),
-    PRIMARY KEY (email_address, theaterID)
+    user_id     integer NOT NULL REFERENCES users(user_id),
+    PRIMARY KEY (user_id)
+);
+
+CREATE TABLE administrator_manages (
+    user_id         integer NOT NULL REFERENCES users(user_id),
+    theater_id      integer NOT NULL REFERENCES theater(theater_id),
+    PRIMARY KEY (user_id, theater_id)
 );
 
 CREATE TABLE clients (
-    email_address   text NOT NULL REFERENCES users(email_address),
+    user_id         integer NOT NULL REFERENCES users(user_id),
     name            text NOT NULL,
     address         text NOT NULL,
     interests       text,
-    PRIMARY KEY (email_address, name, address)
+    PRIMARY KEY (user_id)
 );
 
-CREATE TABLE buys_ticket (
-    name            text NOT NULL REFERENCES clients(name),
-    address         text NOT NULL REFERENCES clients(address),
-    screeningID     integer NOT NULL REFERENCES screening(screeningID),
-    seat_number     integer NOT NULL CHECK (seat_number >= 1),
+CREATE TABLE ticket_sale (
+    sale_id         integer NOT NULL CHECK (sale_id > 0),
+    user_id         integer REFERENCES users(user_id),
+    screening_id    integer NOT NULL REFERENCES screening(screening_id),
+    num_tickets     integer NOT NULL CHECK (num_tickets >= 1),
     purchase_date   timestamp NOT NULL,
     total_price     numeric(10,2) NOT NULL CHECK (total_price >= 0),
-    PRIMARY KEY (name, address, screeningID)
+    card_number     text NOT NULL REFERENCES card_info(card_number),
+    PRIMARY KEY (sale_id)
 );
 
 CREATE TABLE membership (
-    membershipID        integer NOT NULL CHECK (membershipID > 0),
-    name                text NOT NULL REFERENCES clients(name),
-    address             text NOT NULL REFERENCES clients(address),
+    membership_id       integer NOT NULL CHECK (membership_id > 0),
+    user_id             integer UNIQUE NOT NULL REFERENCES users(user_id),
     movies_watched      integer,
     num_free_earned     integer,
-    PRIMARY KEY (membershipID, name, address)
+    PRIMARY KEY (membership_id)
 );
 
 CREATE TABLE card_info (
-    card_number         text NOT NULL,
-    name                text NOT NULL REFERENCES clients(name),
-    address             text NOT NULL REFERENCES clients(address),
-    PRIMARY KEY (card_number, name, address)
+    card_number     text NOT NULL,
+    user_id         integer NOT NULL REFERENCES users(user_id),
+    PRIMARY KEY (card_number, user_id)
 );
 
 CREATE TABLE credit (
