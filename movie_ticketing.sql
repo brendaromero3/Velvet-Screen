@@ -22,7 +22,7 @@ CREATE TABLE movies (
 );
 
 CREATE TABLE theater (
-    theater_id      integer NOT NULL,
+    theater_id      integer NOT NULL CHECK (theater_id > 0),
     max_occupancy   integer NOT NULL,
     is_3d           boolean NOT NULL,
     fancy_sound     boolean NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE movies_genre (
 );
 
 CREATE TABLE screening (
-    screening_id    integer NOT NULL,
+    screening_id    integer NOT NULL CHECK (screening_id > 0),
     movie_id        integer NOT NULL REFERENCES movies(movie_id),
     theater_id      integer NOT NULL REFERENCES theater(theater_id),
     date_time       timestamp NOT NULL,
