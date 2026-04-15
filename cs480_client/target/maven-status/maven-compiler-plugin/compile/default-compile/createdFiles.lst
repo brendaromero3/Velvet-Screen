@@ -1,6 +1,6 @@
-org/example/Main.class
 Client.class
 MessageType.class
+org\example\Main.class
 GuiClient.class
 GuiClient$2.class
 Message.class
