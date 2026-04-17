@@ -171,3 +171,90 @@ CREATE INDEX idx_awards_person      ON awarded(person_id);
 CREATE INDEX idx_screening_movie    ON screening(movie_id);
 CREATE INDEX idx_screening_theater  ON screening(theater_id);
 CREATE INDEX idx_ticket_screening   ON ticket_sale(screening_id);
+
+
+-- ============================================================
+-- Example Test Data
+-- ============================================================
+INSERT INTO person VALUES 
+(1, 'person1', '2000-12-04', 'Actor'), 
+(2, 'person2', '1999-11-03', 'Director'), 
+(3, 'person3', '1998-10-02', 'Writer'),
+(4, 'person4', '1997-09-01', 'Producer');
+
+INSERT INTO movies VALUES 
+(1, 'Insidious', false, 'English', '2011-04-01', 103),  
+(2, 'Movie2', true, 'Spanish', '2025-05-02', 114);
+
+INSERT INTO theater VALUES 
+(1, 600, true, false), 
+(2, 1000, true, true), 
+(3, 200, false, false);
+
+INSERT INTO awards VALUES 
+(1, 'Oscar', 2011), 
+(2, 'Academy Awards', 2005);
+
+INSERT INTO awarded VALUES 
+(1, 1, 2, 'Actor'), 
+(2, 1, 1, 'Director'), 
+(3, 2, 1, 'Writer');
+
+INSERT INTO directors VALUES 
+(2, 1);
+
+INSERT INTO actors VALUES 
+(1, 1, 'Josh');
+
+INSERT INTO writers VALUES 
+(3, 2);
+
+INSERT INTO producers VALUES 
+(4, 2);
+
+INSERT INTO movies_languages VALUES 
+('English', 1),
+('Spanish', 1), 
+('Spanish', 2),
+('French', 2);
+
+INSERT INTO movies_genre VALUES 
+('Horror', 1),  
+('Comedy', 2);
+
+INSERT INTO screening VALUES 
+(1, 1, 2, '2026-04-15 17:00:00'),  
+(2, 2, 3, '2023-12-25 12:00:00');
+
+INSERT INTO users VALUES
+(1, 'email1@gmail.com', '1234'),
+(2, 'email2@uid.edu', 'abcd');
+
+INSERT INTO Reviews VALUES 
+(1, 1, 1, 'too scary'), 
+(2, 1, 5, 'horror!');
+
+INSERT INTO administrators VALUES 
+(2);
+
+INSERT INTO administrator_manages VALUES 
+(2, 2);
+
+INSERT INTO clients VALUES 
+(1, 'client1', '1234 st', 'not horror'),
+(2, 'client2', 'abcd st', 'horror, comedy');
+
+INSERT INTO membership VALUES 
+(1, 1, 5, 1), 
+(2, 2, 1, 0);
+
+INSERT INTO card_info VALUES 
+('123456', 1), 
+('abcdef', 2);
+
+INSERT INTO credit VALUES 
+('123456', '1234 st'), 
+('abcdef', 'abcd st');
+
+INSERT INTO ticket_sale VALUES 
+(1, 1, 1, 2, '2026-04-14 10:00:00', 25.00, '123456');
