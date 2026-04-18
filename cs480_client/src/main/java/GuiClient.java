@@ -294,11 +294,11 @@ public class GuiClient extends Application {
             params.add(language);
         }
         if (genre != null && !genre.isBlank()) {
-            query += " AND EXISTS (SELECT 1 FROM movies_genre mg WHERE mg.movie_id = m.movie_id AND mg.genre = ?)";
+            query += " AND EXISTS (SELECT 1 FROM movies_genre mg WHERE mg.movie_id = m.movie_id AND LOWER(mg.genre) = LOWER(?))";
             params.add(genre);
         }
         if (date != null && !date.isBlank()) {
-            query += " AND s.date_time::DATE = ?";
+            query += " AND s.date_time::DATE = ?::DATE";
             params.add(date);
         }
         if (timeStart != null && timeEnd != null) {

@@ -112,6 +112,6 @@ public class LandingScreen {
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: " + BG_COLOR + ";");
 
-        return new Scene(root, 900, 650);
+        return new Scene(root, 1000, 750);
     }
 }
