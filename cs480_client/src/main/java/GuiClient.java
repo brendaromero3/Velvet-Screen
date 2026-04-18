@@ -17,6 +17,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javafx.scene.text.Font;
 
 public class GuiClient extends Application{
 
@@ -136,34 +137,42 @@ public class GuiClient extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Font.loadFont(getClass().getResourceAsStream("/NotoSerifDisplay-VariableFont_wdth,wght.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/NotoSerifDisplay-Italic-VariableFont_wdth,wght.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/Questrial-Regular.ttf"), 14);
 
-        listUsers = new ComboBox<String>();
-        listUsers.getItems().add("Everyone");
-        listUsers.setValue("Everyone");
-        listItems = new ListView<String>();
+        connect();
 
-        loginSceneSetup(primaryStage);
+        Runnable[] goToLanding  = new Runnable[1];
+        Runnable[] goToLogin    = new Runnable[1];
+        Runnable[] goToRegister = new Runnable[1];
 
-        primaryStage.setTitle("Login");
-        primaryStage.setScene(loginScene);
+        goToLanding[0] = () -> {
+            primaryStage.setScene(new LandingScreen(primaryStage, goToLogin[0], goToRegister[0]).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
 
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent t) {
-                Platform.exit();
-                System.exit(0);
-            }
-        });
+        goToLogin[0] = () -> {
+            primaryStage.setScene(new LoginScreen(primaryStage, this, goToLanding[0], goToRegister[0]).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
 
+        goToRegister[0] = () -> {
+            System.out.println("Go to register");
+        };
+
+        LandingScreen landing = new LandingScreen(primaryStage, goToLogin[0], goToRegister[0]);
+        primaryStage.setTitle("Velvet Screen");
+        primaryStage.setScene(landing.getScene());
+        primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         primaryStage.show();
-
     }
-
+    
     // Connecting to the database
     private void connect () {
         try{
             // Replace "your_password" with your postgres password
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "postgres", "your_password");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
             conn.setAutoCommit(false); // Make it so that it does not auto commit
         }
         catch (Exception e) {
@@ -207,36 +216,59 @@ public class GuiClient extends Application{
         }
     }
 
-    // Creating a function for users to log in
-    private void LogIn (String username, String password) {
+    // // Creating a function for users to log in
+    // private void LogIn (String username, String password) {
+    //     String query = "SELECT * FROM users WHERE email_address = ? AND password = ?;";
+
+    //     try (PreparedStatement stmt = conn.prepareStatement(query)) {
+    //         // Set parameter values using username and password as placeholders
+    //         stmt.setString(1, username);
+    //         stmt.setString(2, password);
+
+    //         // Execute the query and get results
+    //         ResultSet rs = stmt.executeQuery();
+    //         if(rs.next()){  // Username and password combo exists!
+    //             user_id = rs.getInt("user_id");
+    //             // Check if the user is an admin
+    //             if (isAdmin(user_id)) {
+    //                 // MOVE TO ADMIN SCREEN
+    //             }
+    //             else {
+    //                 getMembershipId(user_id);
+    //                 // MOVE TO USER SCREEN
+    //             }
+    //         }
+    //         else{
+    //             // Username and password combo does NOT exist!
+    //             // Prompt user to enter another user and password or create an account
+    //         }
+    //     }
+    //     catch (Exception e) {
+    //         System.out.println("Error: " + e);
+    //     }
+    // }
+        public boolean logIn(String email, String password, Stage stage) {
         String query = "SELECT * FROM users WHERE email_address = ? AND password = ?;";
-
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            // Set parameter values using username and password as placeholders
-            stmt.setString(1, username);
+            stmt.setString(1, email);
             stmt.setString(2, password);
-
-            // Execute the query and get results
             ResultSet rs = stmt.executeQuery();
-            if(rs.next()){  // Username and password combo exists!
+            if (rs.next()) {
                 user_id = rs.getInt("user_id");
-                // Check if the user is an admin
                 if (isAdmin(user_id)) {
-                    // MOVE TO ADMIN SCREEN
-                }
-                else {
+                    // TODO: go to admin dashboard
+                    System.out.println("Admin logged in!");
+                } else {
                     getMembershipId(user_id);
-                    // MOVE TO USER SCREEN
+                    // TODO: go to client dashboard
+                    System.out.println("Client logged in!");
                 }
+                return true;
             }
-            else{
-                // Username and password combo does NOT exist!
-                // Prompt user to enter another user and password or create an account
-            }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e);
         }
+        return false;
     }
 
     // Creating a function to get movie information based on a users input
