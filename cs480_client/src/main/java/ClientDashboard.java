@@ -10,11 +10,11 @@ public class ClientDashboard {
     private Stage stage;
     private GuiClient app;
     private Runnable onLogout;
-    private Runnable onBrowse;
     private Runnable onAccount;
     private Runnable onPayments;
+    private java.util.function.Consumer<String> onBrowse;
 
-    public ClientDashboard(Stage stage, GuiClient app, Runnable onLogout, Runnable onBrowse, Runnable onAccount, Runnable onPayments) {
+    public ClientDashboard(Stage stage, GuiClient app, Runnable onLogout, java.util.function.Consumer<String> onBrowse, Runnable onAccount, Runnable onPayments) {
         this.stage      = stage;
         this.app        = app;
         this.onLogout   = onLogout;
@@ -41,7 +41,9 @@ public class ClientDashboard {
         Button paymentsBtn = navButton("Payment Methods");
         Button logoutBtn   = navButton("Logout");
 
-        browseBtn.setOnAction(e -> { if (onBrowse != null) onBrowse.run(); });
+        browseBtn.setOnAction(e -> {
+            if (onBrowse != null) onBrowse.accept("");
+        });        
         accountBtn.setOnAction(e -> { if (onAccount != null) onAccount.run(); });
         paymentsBtn.setOnAction(e -> { if (onPayments != null) onPayments.run(); });
         logoutBtn.setOnAction(e -> { if (onLogout != null) onLogout.run(); });
@@ -98,7 +100,9 @@ public class ClientDashboard {
             "-fx-background-radius: 4;" +
             "-fx-cursor: hand;"
         );
-        searchBtn.setOnAction(e -> { if (onBrowse != null) onBrowse.run(); });
+        searchBtn.setOnAction(e -> {
+            if (onBrowse != null) onBrowse.accept(searchField.getText().trim());
+        });
 
         HBox searchBar = new HBox(8, searchField, searchBtn);
         searchBar.setAlignment(Pos.CENTER_LEFT);
