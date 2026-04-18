@@ -176,7 +176,7 @@ CREATE INDEX idx_ticket_screening   ON ticket_sale(screening_id);
 -- ============================================================
 -- Example Test Data
 -- ============================================================
-INSERT INTO person VALUES 
+INSERT INTO persons VALUES 
 (1, 'person1', '2000-12-04', 'Actor'), 
 (2, 'person2', '1999-11-03', 'Director'), 
 (3, 'person3', '1998-10-02', 'Writer'),
