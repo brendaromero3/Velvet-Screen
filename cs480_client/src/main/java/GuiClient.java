@@ -158,7 +158,8 @@ public class GuiClient extends Application{
         };
 
         goToRegister[0] = () -> {
-            System.out.println("Go to register");
+            primaryStage.setScene(new RegisterScreen(primaryStage, this, goToLanding[0], goToLogin[0]).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         LandingScreen landing = new LandingScreen(primaryStage, goToLogin[0], goToRegister[0]);
@@ -167,7 +168,7 @@ public class GuiClient extends Application{
         primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         primaryStage.show();
     }
-    
+
     // Connecting to the database
     private void connect () {
         try{
@@ -216,38 +217,8 @@ public class GuiClient extends Application{
         }
     }
 
-    // // Creating a function for users to log in
-    // private void LogIn (String username, String password) {
-    //     String query = "SELECT * FROM users WHERE email_address = ? AND password = ?;";
-
-    //     try (PreparedStatement stmt = conn.prepareStatement(query)) {
-    //         // Set parameter values using username and password as placeholders
-    //         stmt.setString(1, username);
-    //         stmt.setString(2, password);
-
-    //         // Execute the query and get results
-    //         ResultSet rs = stmt.executeQuery();
-    //         if(rs.next()){  // Username and password combo exists!
-    //             user_id = rs.getInt("user_id");
-    //             // Check if the user is an admin
-    //             if (isAdmin(user_id)) {
-    //                 // MOVE TO ADMIN SCREEN
-    //             }
-    //             else {
-    //                 getMembershipId(user_id);
-    //                 // MOVE TO USER SCREEN
-    //             }
-    //         }
-    //         else{
-    //             // Username and password combo does NOT exist!
-    //             // Prompt user to enter another user and password or create an account
-    //         }
-    //     }
-    //     catch (Exception e) {
-    //         System.out.println("Error: " + e);
-    //     }
-    // }
-        public boolean logIn(String email, String password, Stage stage) {
+    // Creating a function for users to log in
+    public boolean logIn(String email, String password, Stage stage) {
         String query = "SELECT * FROM users WHERE email_address = ? AND password = ?;";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
@@ -412,6 +383,70 @@ public class GuiClient extends Application{
         }
         catch (Exception e) {
             System.out.println("Error: " + e);
+        }
+    }
+
+    // registers by adding data to fields!
+    public boolean register(String name, String email, String address, String password, String interests, boolean isAdmin) {
+        try {
+            // get next user id
+            int newUserId;
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT COALESCE(MAX(user_id), 0) + 1 FROM users")) {
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                newUserId = rs.getInt(1);
+            }
+
+            // insert into users
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "INSERT INTO users (user_id, email_address, password) VALUES (?, ?, ?)")) {
+                stmt.setInt(1, newUserId);
+                stmt.setString(2, email);
+                stmt.setString(3, password);
+                stmt.executeUpdate();
+            }
+
+            if (isAdmin) {
+                // insert into administrators
+                try (PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO administrators (user_id) VALUES (?)")) {
+                    stmt.setInt(1, newUserId);
+                    stmt.executeUpdate();
+                }
+            } else {
+                // insert into clients
+                try (PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO clients (user_id, name, address, interests) VALUES (?, ?, ?, ?)")) {
+                    stmt.setInt(1, newUserId);
+                    stmt.setString(2, name);
+                    stmt.setString(3, address);
+                    stmt.setString(4, interests);
+                    stmt.executeUpdate();
+                }
+
+                // create membership
+                int newMembershipId;
+                try (PreparedStatement stmt = conn.prepareStatement(
+                        "SELECT COALESCE(MAX(membership_id), 0) + 1 FROM membership")) {
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    newMembershipId = rs.getInt(1);
+                }
+                try (PreparedStatement stmt = conn.prepareStatement(
+                        "INSERT INTO membership (membership_id, user_id, movies_watched, num_free_earned) VALUES (?, ?, 0, 0)")) {
+                    stmt.setInt(1, newMembershipId);
+                    stmt.setInt(2, newUserId);
+                    stmt.executeUpdate();
+                }
+            }
+
+            conn.commit();
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Registration error: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) { }
+            return false;
         }
     }
 
