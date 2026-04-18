@@ -227,7 +227,7 @@ public class RegisterScreen {
         VBox.setVgrow(scroll, Priority.ALWAYS);
         root.setStyle("-fx-background-color: " + LandingScreen.BG_COLOR + ";");
 
-        return new Scene(root, 800, 600);
+        return new Scene(root, 900, 650);
     }
 
     private String fieldLabelStyle() {
