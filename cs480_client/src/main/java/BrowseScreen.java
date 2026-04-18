@@ -33,7 +33,7 @@ public class BrowseScreen {
 
     public Scene getScene() {
 
-        // Navbar
+        // navbar
         Label wordmark = new Label("Velvet Screen");
         wordmark.setStyle(
             "-fx-font-family: 'Noto Serif Display';" +
@@ -68,7 +68,7 @@ public class BrowseScreen {
             "-fx-background-color: " + LandingScreen.BG_COLOR + ";"
         );
 
-        // Search bar
+        // search bar
         TextField searchField = new TextField(initialSearch);
         searchField.setPromptText("Search by title...");
         searchField.setStyle(
@@ -82,7 +82,7 @@ public class BrowseScreen {
             "-fx-pref-width: 300px;"
         );
 
-        // Filters
+        // filters
         ComboBox<String> languageFilter = new ComboBox<>();
         languageFilter.getItems().addAll("All Languages", "English", "Spanish", "French", "Japanese", "Italian", "German");
         languageFilter.setStyle(comboStyle());
@@ -106,14 +106,14 @@ public class BrowseScreen {
         HBox searchBar = new HBox(8, searchField, languageFilter, timeFilter, searchBtn);
         searchBar.setAlignment(Pos.CENTER_LEFT);
 
-        // Results area
+        // results area
         VBox resultsBox = new VBox(8);
         resultsBox.setFillWidth(true);
 
-        // Flag to prevent search during setup
+        // flag to prevent search during setup
         final boolean[] ready = {false};
 
-        // Search logic
+        // search logic
         Runnable doSearch = () -> {
             if (!ready[0]) return;
             resultsBox.getChildren().clear();
@@ -155,17 +155,14 @@ public class BrowseScreen {
             }
         };
 
-        // Set defaults BEFORE adding listeners
         languageFilter.setValue("All Languages");
         timeFilter.setValue("Any Time");
 
-        // Add listeners AFTER setting defaults
         searchBtn.setOnAction(e -> doSearch.run());
         searchField.setOnAction(e -> doSearch.run());
         languageFilter.setOnAction(e -> doSearch.run());
         timeFilter.setOnAction(e -> doSearch.run());
 
-        // Mark ready and run initial search
         ready[0] = true;
         doSearch.run();
 
@@ -196,10 +193,8 @@ public class BrowseScreen {
         String title       = movie[1];
         String language    = movie[2];
         String releaseDate = movie[3] != null ? movie[3].substring(0, 4) : "";
-        String dateTime    = movie[6] != null ? movie[6].replace(".0", "") : "";
         String is3d        = "true".equals(movie[9]) ? "3D" : "";
         String sound       = "true".equals(movie[10]) ? "Sound" : "";
-        String seats       = movie[11] != null ? movie[11] + " seats available" : "";
 
         String features = "";
         if (!is3d.isEmpty() && !sound.isEmpty()) features = "3D · Sound";
@@ -213,28 +208,15 @@ public class BrowseScreen {
             "-fx-text-fill: " + LandingScreen.TEXT_DARK + ";"
         );
 
-        Label metaLabel = new Label(releaseDate + " · " + language + (features.isEmpty() ? "" : " · " + features));
+        Label metaLabel = new Label(releaseDate + " · " + language +
+            (features.isEmpty() ? "" : " · " + features));
         metaLabel.setStyle(
             "-fx-font-family: 'Questrial';" +
             "-fx-font-size: 12px;" +
             "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";"
         );
 
-        Label dateLabel = new Label(dateTime);
-        dateLabel.setStyle(
-            "-fx-font-family: 'Questrial';" +
-            "-fx-font-size: 12px;" +
-            "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";"
-        );
-
-        Label seatsLabel = new Label(seats);
-        seatsLabel.setStyle(
-            "-fx-font-family: 'Questrial';" +
-            "-fx-font-size: 12px;" +
-            "-fx-text-fill: " + LandingScreen.SUCCESS_COLOR + ";"
-        );
-
-        VBox info = new VBox(4, titleLabel, metaLabel, dateLabel, seatsLabel);
+        VBox info = new VBox(4, titleLabel, metaLabel);
         info.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(info, Priority.ALWAYS);
 

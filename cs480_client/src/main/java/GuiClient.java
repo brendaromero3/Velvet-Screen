@@ -50,7 +50,6 @@ public class GuiClient extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Load fonts
         Font.loadFont(getClass().getResourceAsStream("/NotoSerifDisplay-VariableFont_wdth,wght.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("/NotoSerifDisplay-Italic-VariableFont_wdth,wght.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("/Questrial-Regular.ttf"), 14);
@@ -76,7 +75,6 @@ public class GuiClient extends Application {
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
-        // Store as fields so logIn() can use them
         goToLanding  = goToLandingArr[0];
         goToLogin    = goToLoginArr[0];
         goToRegister = goToRegisterArr[0];
@@ -90,7 +88,7 @@ public class GuiClient extends Application {
     // Connecting to the database
     private void connect() {
         try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "postgres", "your_password");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
             conn.setAutoCommit(false);
         } catch (Exception e) {
             System.out.println("Error: " + e);
@@ -274,7 +272,7 @@ public class GuiClient extends Application {
     public List<String[]> getMovies(String movieName, String language, String genre, String date, String timeStart, String timeEnd) {
         List<String[]> results = new ArrayList<>();
 
-        String query = "SELECT DISTINCT m.movie_id, m.title, m.original_language, " +
+        String query = "SELECT DISTINCT ON (m.movie_id) m.movie_id, m.title, m.original_language, " +
                 "m.release_date, m.major_studio, s.screening_id, s.date_time, " +
                 "t.theater_id, t.max_occupancy, t.is_3d, t.fancy_sound, " +
                 "(t.max_occupancy - COALESCE(" +
@@ -309,7 +307,7 @@ public class GuiClient extends Application {
             params.add(timeEnd);
         }
 
-        query += " ORDER BY s.date_time;";
+        query += " ORDER BY m.movie_id, s.date_time;";
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             for (int i = 0; i < params.size(); i++) {
