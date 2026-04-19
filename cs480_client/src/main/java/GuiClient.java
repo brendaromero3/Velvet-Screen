@@ -18,6 +18,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class GuiClient extends Application {
 
@@ -44,6 +45,8 @@ public class GuiClient extends Application {
     public Runnable goToLogin;
     public Runnable goToRegister;
 
+    public Consumer<String[]> goToMovieDetail;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -59,6 +62,7 @@ public class GuiClient extends Application {
         Runnable[] goToLandingArr  = new Runnable[1];
         Runnable[] goToLoginArr    = new Runnable[1];
         Runnable[] goToRegisterArr = new Runnable[1];
+//        Runnable[] goToMovieDetailArr = new Runnable[1];
 
         goToLandingArr[0] = () -> {
             primaryStage.setScene(new LandingScreen(primaryStage, goToLoginArr[0], goToRegisterArr[0]).getScene());
@@ -75,9 +79,15 @@ public class GuiClient extends Application {
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
+        goToMovieDetail = (movie) -> {
+            primaryStage.setScene(new MovieDetailScreen(primaryStage, this, goToLandingArr[0], goToLoginArr[0], movie).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
+
         goToLanding  = goToLandingArr[0];
         goToLogin    = goToLoginArr[0];
         goToRegister = goToRegisterArr[0];
+//        goToMovieDetail  = goToMovieDetailArr[0];
 
         primaryStage.setTitle("Velvet Screen");
         primaryStage.setScene(new LandingScreen(primaryStage, goToLogin, goToRegister).getScene());
@@ -88,7 +98,7 @@ public class GuiClient extends Application {
     // Connecting to the database
     private void connect() {
         try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "3D33Jsski2s");
             conn.setAutoCommit(false);
         } catch (Exception e) {
             System.out.println("Error: " + e);
@@ -190,7 +200,8 @@ public class GuiClient extends Application {
                                     goToLanding,
                                     () -> System.out.println("Go to account"),
                                     () -> System.out.println("Go to payments"),
-                                    (movie) -> System.out.println("View details: " + movie[1])
+//                                    (movie) -> System.out.println("View details: " + movie[1])
+                                    (movie) -> goToMovieDetail.accept(movie)
                                 ).getScene());
                                 stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                             },
