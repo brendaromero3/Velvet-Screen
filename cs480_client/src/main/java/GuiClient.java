@@ -338,78 +338,176 @@ public class GuiClient extends Application {
     }
 
     // Add payment method
-    private void addPaymentMethod(String card_num, String billing_addr) {
-        String query = "INSERT INTO card_info VALUES (?,?);";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, card_num);
-            stmt.setInt(2, user_id);
-            stmt.executeUpdate();
+    public boolean addPaymentMethod(String card_num, String billing_addr) {
+        try {
+            String query = "INSERT INTO card_info VALUES (?,?);";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, card_num);
+                stmt.setInt(2, user_id);
+                stmt.executeUpdate();
+            }
+
+            if (billing_addr != null && !billing_addr.isBlank()) {
+                String query2 = "INSERT INTO credit VALUES (?,?);";
+                try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
+                    stmt2.setString(1, card_num);
+                    stmt2.setString(2, billing_addr);
+                    stmt2.executeUpdate();
+                }
+            }
+
+            conn.commit();
+            return true;
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            return false;
         }
-
-        if (billing_addr != null && !billing_addr.isBlank()) {
-            String query2 = "INSERT INTO credit VALUES (?,?);";
-            try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
-                stmt2.setString(1, card_num);
-                stmt2.setString(2, billing_addr);
-                stmt2.executeUpdate();
-            } catch (Exception e) {
-                System.out.println("Error: " + e);
-            }
-        }
-
-        try { conn.commit(); } catch (Exception e) { System.out.println("Error: " + e); }
     }
 
     // Delete payment method
-    private void deletePaymentMethods(String card_num, String billing_addr) {
-        if (billing_addr != null && !billing_addr.isBlank()) {
-            String query2 = "DELETE FROM credit WHERE card_number = ? AND billing_address = ?;";
-            try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
-                stmt2.setString(1, card_num);
-                stmt2.setString(2, billing_addr);
-                stmt2.executeUpdate();
-            } catch (Exception e) {
-                System.out.println("Error: " + e);
+    public boolean deletePaymentMethods(String card_num, String billing_addr) {
+        try {
+            if (billing_addr != null && !billing_addr.isBlank()) {
+                String query2 = "DELETE FROM credit WHERE card_number = ? AND billing_address = ?;";
+                try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
+                    stmt2.setString(1, card_num);
+                    stmt2.setString(2, billing_addr);
+                    stmt2.executeUpdate();
+                }
             }
-        }
 
-        String query = "DELETE FROM card_info WHERE card_number = ? AND user_id = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, card_num);
-            stmt.setInt(2, user_id);
-            stmt.executeUpdate();
+            String query = "DELETE FROM card_info WHERE card_number = ? AND user_id = ?;";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, card_num);
+                stmt.setInt(2, user_id);
+                stmt.executeUpdate();
+            }
+
+            conn.commit();
+            return true;
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            return false;
         }
-
-        try { conn.commit(); } catch (Exception e) { System.out.println("Error: " + e); }
     }
 
     // Update payment method
-    private void updatePaymentMethods(String card_num, String billing_addr, String old_billing_addr) {
-        String query = "UPDATE card_info SET card_number = ? WHERE user_id = ? AND card_number = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, card_num);
-            stmt.setInt(2, user_id);
-            stmt.setString(3, old_billing_addr);
-            stmt.executeUpdate();
+    public boolean updatePaymentMethods(String card_num, String billing_addr, String old_billing_addr) {
+        try {
+            String query = "UPDATE card_info SET card_number = ? WHERE user_id = ? AND card_number = ?;";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, card_num);
+                stmt.setInt(2, user_id);
+                stmt.setString(3, old_billing_addr);
+                stmt.executeUpdate();
+            }
+
+            if (billing_addr != null && !billing_addr.isBlank()) {
+                String query2 = "UPDATE credit SET billing_address = ? WHERE card_number = ?;";
+                try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
+                    stmt2.setString(1, billing_addr);
+                    stmt2.setString(2, card_num);
+                    stmt2.executeUpdate();
+                }
+            }
+
+            conn.commit();
+            return true;
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            return false;
         }
+    }
 
-        if (billing_addr != null && !billing_addr.isBlank()) {
-            String query2 = "UPDATE credit SET billing_address = ? WHERE card_number = ?;";
-            try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
-                stmt2.setString(1, billing_addr);
-                stmt2.setString(2, card_num);
-                stmt2.executeUpdate();
-            } catch (Exception e) {
-                System.out.println("Error: " + e);
+    // Schedule a movie screening
+    public boolean schedule (String movieName, int theater_id, String date, String time) {
+        int movie_id;
+        try {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT movie_id FROM movies WHERE title = ?")){
+                stmt.setString(1, movieName);
+
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                movie_id = rs.getInt("movie_id");
             }
-        }
 
-        try { conn.commit(); } catch (Exception e) { System.out.println("Error: " + e); }
+            int newScreeningId;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT COALESCE(MAX(screening_id), 0) + 1 FROM screening")) {
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                newScreeningId = rs.getInt(1);
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "INSERT INTO screening (screening_id, movie_id, theater_id, date_time) VALUES (?, ?, ?, ?::TIMESTAMP)")) {
+                stmt.setInt(1, newScreeningId);
+                stmt.setInt(2, movie_id);
+                stmt.setInt(3, theater_id);
+                stmt.setString(4, (date + time));
+                stmt.executeUpdate();
+            }
+
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            return false;
+        }
+    }
+
+    // Monitor movie screenings
+    public int monitor (String movieName, String date_time) {
+        try {
+            int movie_id;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT movie_id FROM movies WHERE title = ?")){
+                stmt.setString(1, movieName);
+
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                movie_id = rs.getInt("movie_id");
+            }
+
+            int screening_id;
+            int theater_id;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT screening_id, theater_id FROM screening WHERE movie_id = ? AND date_time = ?::TIMESTAMP")){
+                stmt.setInt(1, movie_id);
+                stmt.setString(1, date_time);
+
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                screening_id = rs.getInt("screening_id");
+                theater_id = rs.getInt("theater_id");
+            }
+
+            int max_capacity;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT max_occupancy FROM theater WHERE theater_id = ?")){
+                stmt.setInt(1, theater_id);
+
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                max_capacity = rs.getInt("max_occupancy");
+            }
+
+            int sold;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT SUM(num_tickets) FROM ticket_sale WHERE screening_id = ?")){
+                stmt.setInt(1, screening_id);
+
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                sold = rs.getInt(1);
+            }
+
+            return max_capacity - sold;
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            return -1;
+        }
     }
 }
