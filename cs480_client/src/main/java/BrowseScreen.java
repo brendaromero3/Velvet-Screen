@@ -82,10 +82,18 @@ public class BrowseScreen {
             "-fx-pref-width: 300px;"
         );
 
+        // date picker
+        DatePicker datePicker = new DatePicker();
+        datePicker.setPrefWidth(110);
+
         // filters
         ComboBox<String> languageFilter = new ComboBox<>();
         languageFilter.getItems().addAll("All Languages", "English", "Spanish", "French", "Japanese", "Italian", "German");
         languageFilter.setStyle(comboStyle());
+
+        ComboBox<String> genreFilter = new ComboBox<>();
+        genreFilter.getItems().addAll("All Genres", "Horror", "Comedy", "Romance", "Action", "Crime", "Drama", "Fantasy", "Sci-Fi", "Thriller", "Musical", "Historical");
+        genreFilter.setStyle(comboStyle());
 
         ComboBox<String> timeFilter = new ComboBox<>();
         timeFilter.getItems().addAll("Any Time", "Morning (before 12:00)", "Afternoon (12:00-17:00)", "Evening (after 17:00)");
@@ -103,7 +111,7 @@ public class BrowseScreen {
             "-fx-cursor: hand;"
         );
 
-        HBox searchBar = new HBox(8, searchField, languageFilter, timeFilter, searchBtn);
+        HBox searchBar = new HBox(8, searchField, languageFilter, genreFilter, datePicker, timeFilter, searchBtn);
         searchBar.setAlignment(Pos.CENTER_LEFT);
 
         // results area
@@ -121,6 +129,9 @@ public class BrowseScreen {
             String search    = searchField.getText().trim();
             String lang      = languageFilter.getValue() == null ||
                                languageFilter.getValue().equals("All Languages") ? null : languageFilter.getValue();
+            String genre     = genreFilter.getValue() == null ||
+                               genreFilter.getValue().equals("All Genres") ? null : genreFilter.getValue();
+            String date      = (datePicker.getValue() != null) ? datePicker.getValue().toString() : null;
             String timeStart = null;
             String timeEnd   = null;
 
@@ -138,7 +149,7 @@ public class BrowseScreen {
                 }
             }
 
-            List<String[]> movies = app.getMovies(search, lang, null, null, timeStart, timeEnd);
+            List<String[]> movies = app.getMovies(search, lang, genre, date, timeStart, timeEnd);
 
             if (movies.isEmpty()) {
                 Label noResults = new Label("No screenings found. Try a different search.");
@@ -156,12 +167,15 @@ public class BrowseScreen {
         };
 
         languageFilter.setValue("All Languages");
+        genreFilter.setValue("All Genres");
         timeFilter.setValue("Any Time");
 
         searchBtn.setOnAction(e -> doSearch.run());
         searchField.setOnAction(e -> doSearch.run());
         languageFilter.setOnAction(e -> doSearch.run());
+        genreFilter.setOnAction(e -> doSearch.run());
         timeFilter.setOnAction(e -> doSearch.run());
+        datePicker.setOnAction(e -> doSearch.run());
 
         ready[0] = true;
         doSearch.run();
@@ -186,7 +200,7 @@ public class BrowseScreen {
         VBox.setVgrow(content, Priority.ALWAYS);
         root.setStyle("-fx-background-color: " + LandingScreen.BG_COLOR + ";");
 
-        return new Scene(root, 900, 650);
+        return new Scene(root, 1000, 750);
     }
 
     private HBox movieCard(String[] movie) {

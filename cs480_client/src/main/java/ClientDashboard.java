@@ -178,7 +178,7 @@ public class ClientDashboard {
         VBox.setVgrow(contentWrapper, Priority.ALWAYS);
         root.setStyle("-fx-background-color: " + LandingScreen.BG_COLOR + ";");
 
-        return new Scene(root, 900, 650);
+        return new Scene(root, 1000, 750);
     }
 
     private Button navButton(String text) {
