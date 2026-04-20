@@ -44,6 +44,7 @@ public class GuiClient extends Application {
     public Runnable goToLanding;
     public Runnable goToLogin;
     public Runnable goToRegister;
+    public Runnable goToBrowse;
 
     public Consumer<String[]> goToMovieDetail;
 
@@ -62,6 +63,7 @@ public class GuiClient extends Application {
         Runnable[] goToLandingArr  = new Runnable[1];
         Runnable[] goToLoginArr    = new Runnable[1];
         Runnable[] goToRegisterArr = new Runnable[1];
+        Runnable[] goToBrowseArr = new Runnable[1];
 //        Runnable[] goToMovieDetailArr = new Runnable[1];
 
         goToLandingArr[0] = () -> {
@@ -79,15 +81,20 @@ public class GuiClient extends Application {
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
+        goToBrowseArr[0] = () -> {
+            primaryStage.setScene(new BrowseScreen(primaryStage, this, null, goToLandingArr[0], goToLoginArr[0], null, null, goToMovieDetail).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
+
         goToMovieDetail = (movie) -> {
-            primaryStage.setScene(new MovieDetailScreen(primaryStage, this, goToLandingArr[0], goToLoginArr[0], movie).getScene());
+            primaryStage.setScene(new MovieDetailScreen(primaryStage, this, goToBrowseArr[0], goToLoginArr[0], movie).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToLanding  = goToLandingArr[0];
         goToLogin    = goToLoginArr[0];
         goToRegister = goToRegisterArr[0];
-//        goToMovieDetail  = goToMovieDetailArr[0];
+        goToBrowse = goToBrowseArr[0];
 
         primaryStage.setTitle("Velvet Screen");
         primaryStage.setScene(new LandingScreen(primaryStage, goToLogin, goToRegister).getScene());
@@ -98,7 +105,7 @@ public class GuiClient extends Application {
     // Connecting to the database
     private void connect() {
         try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "3D33Jsski2s");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
             conn.setAutoCommit(false);
         } catch (Exception e) {
             System.out.println("Error: " + e);
@@ -288,7 +295,7 @@ public class GuiClient extends Application {
                 "t.theater_id, t.max_occupancy, t.is_3d, t.fancy_sound, " +
                 "(t.max_occupancy - COALESCE(" +
                 "  (SELECT SUM(num_tickets) FROM ticket_sale WHERE screening_id = s.screening_id), 0" +
-                ")) AS seats_available " +
+                ")) AS seats_available, m.length " +
                 "FROM movies m " +
                 "JOIN screening s ON m.movie_id = s.movie_id " +
                 "JOIN theater t ON s.theater_id = t.theater_id " +
@@ -338,13 +345,111 @@ public class GuiClient extends Application {
                     rs.getString("max_occupancy"),
                     rs.getString("is_3d"),
                     rs.getString("fancy_sound"),
-                    rs.getString("seats_available")
+                    rs.getString("seats_available"),
+                        rs.getString("length")
                 });
             }
         } catch (Exception e) {
             System.out.println("Error getting movies: " + e.getMessage());
         }
 
+        return results;
+    }
+
+    // Get all Actors for a specfic movie
+    public List<String[]> getActors(String movieId) {
+        List<String[]> results = new ArrayList<>();
+
+        String query = "SELECT p.name, a.character_name " +
+                "FROM actors a " +
+                "JOIN persons p on a.person_id = p.person_id " +
+                "WHERE a.movie_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, Integer.parseInt(movieId));
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(new String[]{
+                        rs.getString("name"),
+                        rs.getString("character_name")
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting actors: " + e.getMessage());
+        }
+        return results;
+    }
+
+    // Get all Directors for a specfic movie
+    public List<String[]> getDirectors(String movieId) {
+        List<String[]> results = new ArrayList<>();
+
+        String query = "SELECT p.name " +
+                "FROM directors d " +
+                "JOIN persons p on d.person_id = p.person_id " +
+                "WHERE d.movie_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, Integer.parseInt(movieId));
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(new String[]{
+                        rs.getString("name"),
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting directors: " + e.getMessage());
+        }
+        return results;
+    }
+
+    // Get all Writers for a specfic movie
+    public List<String[]> getWriters(String movieId) {
+        List<String[]> results = new ArrayList<>();
+
+        String query = "SELECT p.name " +
+                "FROM writers w " +
+                "JOIN persons p on w.person_id = p.person_id " +
+                "WHERE w.movie_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, Integer.parseInt(movieId));
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(new String[]{
+                        rs.getString("name"),
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting writers: " + e.getMessage());
+        }
+        return results;
+    }
+
+    // Get all Producers for a specfic movie
+    public List<String[]> getProducers(String movieId) {
+        List<String[]> results = new ArrayList<>();
+
+        String query = "SELECT p.name " +
+                "FROM producers pr " +
+                "JOIN persons p on pr.person_id = p.person_id " +
+                "WHERE pr.movie_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, Integer.parseInt(movieId));
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(new String[]{
+                        rs.getString("name"),
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting producers: " + e.getMessage());
+        }
         return results;
     }
 
