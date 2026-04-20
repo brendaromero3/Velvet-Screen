@@ -15,17 +15,17 @@ public class MovieDetailScreen {
     private Stage stage;
     private GuiClient app;
     private Runnable onBack;
-    private Runnable onLogin;
-    private String[] movie;
     private Runnable onLogout;
+    private String[] movie;
+//    private Runnable onLogout;
     private Runnable onAccount;
     private Runnable onPayments;
 
-    public MovieDetailScreen(Stage stage, GuiClient app, Runnable onBack, Runnable onLogin, String[] movie) {
+    public MovieDetailScreen(Stage stage, GuiClient app, Runnable onBack, Runnable onLogout, String[] movie) {
         this.stage   = stage;
         this.app     = app;
         this.onBack  = onBack;
-        this.onLogin = onLogin;
+        this.onLogout = onLogout;
         this.movie  = movie;
     }
 
