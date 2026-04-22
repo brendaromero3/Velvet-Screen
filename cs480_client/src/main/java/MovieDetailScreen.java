@@ -17,7 +17,6 @@ public class MovieDetailScreen {
     private Runnable onBack;
     private Runnable onLogout;
     private String[] movie;
-//    private Runnable onLogout;
     private Runnable onAccount;
     private Runnable onPayments;
 
@@ -250,7 +249,9 @@ public class MovieDetailScreen {
             int price = 15;
 
             Boolean is3D = Boolean.parseBoolean(screen[9]);
+            System.out.println("3d: " + is3D);
             Boolean isFancy = Boolean.parseBoolean(screen[10]);
+            System.out.println("fancy: " + isFancy);
             Boolean isMajor = Boolean.parseBoolean(screen[4]);
 
             // Gets the different features of the theater and adjusts the price
@@ -301,7 +302,8 @@ public class MovieDetailScreen {
 //            });
             table.add(book, 5, row); // adds the button the GridPane
 
-            int cap = Integer.parseInt(screen[12]);
+            // PROBLEM
+            int cap = Integer.parseInt(screen[8])- Integer.parseInt(screen[12]);
             if (cap <= 0) {
                 book.setText("Sold Out");
                 book.setDisable(true);
