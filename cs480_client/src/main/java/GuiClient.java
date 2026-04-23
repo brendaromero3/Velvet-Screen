@@ -591,7 +591,7 @@ public class GuiClient extends Application {
             try (PreparedStatement stmt = conn.prepareStatement(
                     "SELECT screening_id, theater_id FROM screening WHERE movie_id = ? AND date_time = ?::TIMESTAMP")){
                 stmt.setInt(1, movie_id);
-                stmt.setString(1, date_time);
+                stmt.setString(2, date_time);
 
                 ResultSet rs = stmt.executeQuery();
                 rs.next();
