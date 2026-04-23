@@ -9,6 +9,7 @@ import java.util.List;
 import javafx.scene.layout.GridPane;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class MovieDetailScreen {
 
@@ -248,11 +249,18 @@ public class MovieDetailScreen {
             String seats = screen[12];
             int price = 15;
 
-            Boolean is3D = Boolean.parseBoolean(screen[9]);
-            System.out.println("3d: " + is3D);
-            Boolean isFancy = Boolean.parseBoolean(screen[10]);
-            System.out.println("fancy: " + isFancy);
-            Boolean isMajor = Boolean.parseBoolean(screen[4]);
+            boolean is3D = false;
+            boolean isFancy = false;
+            boolean isMajor = false;
+            if (screen[9].equals("t")){
+                is3D = true;
+            }
+            if (screen[10].equals("t")){
+                isFancy = true;
+            }
+            if (screen[4].equals("t")) {
+                isMajor = true;
+            }
 
             // Gets the different features of the theater and adjusts the price
             String features = "";
@@ -274,7 +282,7 @@ public class MovieDetailScreen {
                 price += 3;
             }
 
-            // checks if an discounts can be applied based on the release date and current date
+            // checks if a discounts can be applied based on the release date and current date
             price = discount(screen, price);
 
             String p = "$" + price;
@@ -339,15 +347,15 @@ public class MovieDetailScreen {
         LocalDate minus2Months = LocalDate.now().minusMonths(2);
         LocalDate minus2Years = LocalDate.now().minusYears(2);
 
-        // checks if the movie's relase date is before the 2 months and 2 years date
+        // checks if the movie's release date is before the 2 months and 2 years date
         Boolean months = date.isBefore(minus2Months);
         Boolean years = date.isBefore(minus2Years);
 
         if (years) {
-            price *= 0.8; // 80% of orignal price/20% off
+            price *= 0.8; // 80% of original price/20% off
         }
         if (months) {
-            price *= 0.6; // 60% of orignal price/40% off
+            price *= 0.6; // 60% of original price/40% off
         }
 
         return price;
