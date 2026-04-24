@@ -713,4 +713,136 @@ public class GuiClient extends Application {
         }
         return false;
     }
+
+    // Admin stats functions
+
+    public static class ScreeningStat {
+        int theater_id;
+        int screening_id;
+        String movie_name;
+        double revenue;
+        int seatsSold;
+        int capacity;
+    }
+
+    public List<ScreeningStat> screeningStats() {
+        List<ScreeningStat> results = new ArrayList<>();
+
+        // revenue per screening - stat.revenue
+        // percentage of seats sold per screening - seatsSold/capacity
+
+        String query = "SELECT am.theater_id, s.screening_id, m.title, " +
+                "COALESCE(SUM(ts.total_price), 0.00), COALESCE(SUM(ts.num_tickets), 0), " +
+                "t.max_capacity FROM administrator_manages am " +
+                "JOIN theater t ON am.theater_id = t.theater_id " +
+                "JOIN screening s ON t.theater_id = s.theater_id " +
+                "JOIN movies m ON s.movie_id = m.movie_id " +
+                "JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
+                "GROUP BY s.screening_id " +
+                "ORDER BY t.theater_id;";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                ScreeningStat stat = new ScreeningStat();
+                stat.theater_id = rs.getInt(1);
+                stat.screening_id = rs.getInt(2);
+                stat.movie_name = rs.getString(3);
+                stat.revenue = rs.getDouble(4);
+                stat.seatsSold = rs.getInt(5);
+                stat.capacity = rs.getInt(6);
+                results.add(stat);
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting screening stats: " + e.getMessage());
+        }
+
+        return results;
+    }
+
+    public static class MovieStat {
+        String movie_name;
+        int theater_id;
+        double revenue;
+        int seatsSold;
+    }
+
+    public List<MovieStat> movieStats() {
+        List<MovieStat> results = new ArrayList<>();
+
+        // revenue per movie - stat.revenue
+        // movie with most revenue  - manually find the movie with the highest revenue
+        // total tickets sold per movie - stat.seatsSold
+
+        String query = "SELECT m.title, t.theater_id, COALESCE(SUM(ts.total_price), 0.00), " +
+                "COALESCE(SUM(ts.num_tickets), 0) FROM administrator_manages am " +
+                "JOIN theater t ON am.theater_id = t.theater_id " +
+                "JOIN screening s ON t.theater_id = s.theater_id " +
+                "JOIN movies m ON s.movie_id = m.movie_id " +
+                "JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
+                "GROUP BY m.movie_id, t.theater_id " +
+                "ORDER BY m.movie_id;";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                MovieStat stat = new MovieStat();
+                stat.movie_name = rs.getString(1);
+                stat.theater_id = rs.getInt(2);
+                stat.revenue = rs.getDouble(3);
+                stat.seatsSold = rs.getInt(4);
+                results.add(stat);
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting movie stats: " + e.getMessage());
+        }
+
+        return results;
+    }
+
+    public static class TheaterStat {
+        int theater_id;
+        double revenue;
+        int ticketsSold;
+        double avgOccupancy;
+        int minOccupancy;
+        int maxOccupancy;
+    }
+
+    public List<TheaterStat> theaterStats() {
+        List<TheaterStat> results = new ArrayList<>();
+
+        // total tickets sold per theater - stat.ticketsSold
+        // total ticket sale revenue - stat.revenue
+        // avg, min, max occupancy rate (% of occupied seats) for a theater - stat.avgOccupancy, stat.minOccupancy, stat.maxOccupancy
+
+        String query = "SELECT t.theater_id, COALESCE(SUM(ts.total_price), 0.00), " +
+                "COALESCE(SUM(ts.num_tickets), 0), AVG(ts.num_tickets::FLOAT), " +
+                "MIN(ts.num_tickets), MAX(ts.num_tickets) " +
+                "FROM administrator_manages am " +
+                "JOIN theater t ON am.theater_id = t.theater_id " +
+                "JOIN screening s ON t.theater_id = s.theater_id " +
+                "JOIN movies m ON s.movie_id = m.movie_id " +
+                "JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
+                "GROUP BY t.theater_id " +
+                "ORDER BY t.theater_id;";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                TheaterStat stat = new TheaterStat();
+                stat.theater_id = rs.getInt(1);
+                stat.revenue = rs.getDouble(2);
+                stat.ticketsSold = rs.getInt(3);
+                stat.avgOccupancy = rs.getDouble(4);
+                stat.minOccupancy = rs.getInt(5);
+                stat.maxOccupancy = rs.getInt(6);
+                results.add(stat);
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting theater stats: " + e.getMessage());
+        }
+
+        return results;
+    }
 }
