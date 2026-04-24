@@ -46,6 +46,7 @@ public class GuiClient extends Application {
     public Runnable goToRegister;
     public Runnable goToBrowse;
     public Runnable goToPayments;
+    public Runnable goToAccount;
 
     public Consumer<String[]> goToMovieDetail;
 
@@ -66,6 +67,7 @@ public class GuiClient extends Application {
         Runnable[] goToRegisterArr = new Runnable[1];
         Runnable[] goToBrowseArr   = new Runnable[1];
         Runnable[] goToPaymentsArr = new Runnable[1];
+        Runnable[] goToAccountArr = new Runnable[1];
 
         goToLandingArr[0] = () -> {
             primaryStage.setScene(new LandingScreen(primaryStage, goToLoginArr[0], goToRegisterArr[0]).getScene());
@@ -83,7 +85,7 @@ public class GuiClient extends Application {
         };
 
         goToBrowseArr[0] = () -> {
-            primaryStage.setScene(new BrowseScreen(primaryStage, this, null, goToLandingArr[0], goToLoginArr[0], null, goToPaymentsArr[0], goToMovieDetail).getScene());
+            primaryStage.setScene(new BrowseScreen(primaryStage, this, null, goToLandingArr[0], goToLoginArr[0], goToAccountArr[0], goToPaymentsArr[0], goToMovieDetail).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
@@ -98,7 +100,18 @@ public class GuiClient extends Application {
                 goToLandingArr[0],
                 goToLandingArr[0],
                 goToBrowseArr[0],
-                () -> System.out.println("Go to account")
+                goToAccountArr[0]
+            ).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
+
+        goToAccountArr[0] = () -> {
+            primaryStage.setScene(new ClientProfileScreen(
+                primaryStage, this,
+                goToLandingArr[0],
+                goToLandingArr[0],
+                goToBrowseArr[0],
+                goToPaymentsArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
@@ -108,6 +121,7 @@ public class GuiClient extends Application {
         goToRegister = goToRegisterArr[0];
         goToBrowse   = goToBrowseArr[0];
         goToPayments = goToPaymentsArr[0];
+        goToAccount = goToAccountArr[0];
 
         primaryStage.setTitle("Velvet Screen");
         primaryStage.setScene(new LandingScreen(primaryStage, goToLogin, goToRegister).getScene());
@@ -211,20 +225,20 @@ public class GuiClient extends Application {
                                                     null, goToLanding, null, goToPayments, goToMovieDetail).getScene());
                                                 stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                                             },
-                                            () -> System.out.println("Go to account"),
+                                            goToAccount,
                                             goToPayments
                                         );
                                         stage.setScene(db.getScene());
                                         stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                                     },
                                     goToLanding,
-                                    () -> System.out.println("Go to account"),
+                                    goToAccount,
                                     goToPayments,
                                     (movie) -> goToMovieDetail.accept(movie)
                                 ).getScene());
                                 stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                             },
-                            () -> System.out.println("Go to account"),
+                            goToAccount,
                             goToPayments
                         );
                         stage.setScene(dashboard.getScene());
@@ -626,5 +640,77 @@ public class GuiClient extends Application {
             System.out.println("Error getting payment methods: " + e.getMessage());
         }
         return results;
+    }
+
+    // Get client info for profile screen
+    public String[] getClientInfo() {
+        String query = "SELECT c.name, u.email_address, c.address, c.interests " +
+                    "FROM clients c JOIN users u ON c.user_id = u.user_id " +
+                    "WHERE c.user_id = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, user_id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new String[]{
+                    rs.getString("name"),
+                    rs.getString("email_address"),
+                    rs.getString("address"),
+                    rs.getString("interests")
+                };
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting client info: " + e.getMessage());
+        }
+        return new String[]{"", "", "", ""};
+    }
+
+    // Update client info
+    public boolean updateClientInfo(String name, String email, String address, String interests) {
+        try {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE clients SET name = ?, address = ?, interests = ? WHERE user_id = ?")) {
+                stmt.setString(1, name);
+                stmt.setString(2, address);
+                stmt.setString(3, interests);
+                stmt.setInt(4, user_id);
+                stmt.executeUpdate();
+            }
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE users SET email_address = ? WHERE user_id = ?")) {
+                stmt.setString(1, email);
+                stmt.setInt(2, user_id);
+                stmt.executeUpdate();
+            }
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error updating client info: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+            return false;
+        }
+    }
+
+    // Change password
+    public boolean changePassword(String currentPass, String newPass) {
+        String query = "SELECT * FROM users WHERE user_id = ? AND password = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, user_id);
+            stmt.setString(2, currentPass);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                try (PreparedStatement stmt2 = conn.prepareStatement(
+                        "UPDATE users SET password = ? WHERE user_id = ?")) {
+                    stmt2.setString(1, newPass);
+                    stmt2.setInt(2, user_id);
+                    stmt2.executeUpdate();
+                }
+                conn.commit();
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println("Error changing password: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+        }
+        return false;
     }
 }
