@@ -47,6 +47,7 @@ public class GuiClient extends Application {
     public Runnable goToBrowse;
     public Runnable goToPayments;
     public Runnable goToAccount;
+    public Runnable goToDashboard;
 
     public Consumer<String[]> goToMovieDetail;
 
@@ -68,6 +69,7 @@ public class GuiClient extends Application {
         Runnable[] goToBrowseArr   = new Runnable[1];
         Runnable[] goToPaymentsArr = new Runnable[1];
         Runnable[] goToAccountArr = new Runnable[1];
+        Runnable[] goToDashboardArr = new Runnable[1];
 
         goToLandingArr[0] = () -> {
             primaryStage.setScene(new LandingScreen(primaryStage, goToLoginArr[0], goToRegisterArr[0]).getScene());
@@ -85,19 +87,28 @@ public class GuiClient extends Application {
         };
 
         goToBrowseArr[0] = () -> {
-            primaryStage.setScene(new BrowseScreen(primaryStage, this, null, goToLandingArr[0], goToLoginArr[0], goToAccountArr[0], goToPaymentsArr[0], goToMovieDetail).getScene());
+            primaryStage.setScene(new BrowseScreen(primaryStage, this, null, goToDashboardArr[0], goToLoginArr[0], goToAccountArr[0], goToPaymentsArr[0], goToMovieDetail).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToMovieDetail = (movie) -> {
-            primaryStage.setScene(new MovieDetailScreen(primaryStage, this, goToBrowseArr[0], goToLoginArr[0], movie).getScene());
+            primaryStage.setScene(new MovieDetailScreen(primaryStage, this, goToBrowseArr[0], goToLoginArr[0], goToAccountArr[0], goToPaymentsArr[0], movie).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
+
+        goToDashboardArr[0] = () -> {
+            primaryStage.setScene(new ClientDashboard(primaryStage, this, goToLanding, (s) -> {
+                primaryStage.setScene(new BrowseScreen(primaryStage, this, s,
+                        goToDashboard, goToLanding, null, goToPayments, goToMovieDetail).getScene());
+                primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+            }, goToAccount, goToPayments).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToPaymentsArr[0] = () -> {
             primaryStage.setScene(new PaymentMethodsScreen(
                 primaryStage, this,
-                goToLandingArr[0],
+                goToDashboardArr[0],
                 goToLandingArr[0],
                 goToBrowseArr[0],
                 goToAccountArr[0]
@@ -108,7 +119,7 @@ public class GuiClient extends Application {
         goToAccountArr[0] = () -> {
             primaryStage.setScene(new ClientProfileScreen(
                 primaryStage, this,
-                goToLandingArr[0],
+                goToDashboardArr[0],
                 goToLandingArr[0],
                 goToBrowseArr[0],
                 goToPaymentsArr[0]
@@ -122,6 +133,7 @@ public class GuiClient extends Application {
         goToBrowse   = goToBrowseArr[0];
         goToPayments = goToPaymentsArr[0];
         goToAccount = goToAccountArr[0];
+        goToDashboard = goToDashboardArr[0];
 
         primaryStage.setTitle("Velvet Screen");
         primaryStage.setScene(new LandingScreen(primaryStage, goToLogin, goToRegister).getScene());
@@ -222,7 +234,7 @@ public class GuiClient extends Application {
                                         ClientDashboard db = new ClientDashboard(stage, this, goToLanding,
                                             (s) -> {
                                                 stage.setScene(new BrowseScreen(stage, this, s,
-                                                    null, goToLanding, null, goToPayments, goToMovieDetail).getScene());
+                                                    goToDashboard, goToLanding, null, goToPayments, goToMovieDetail).getScene());
                                                 stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                                             },
                                             goToAccount,

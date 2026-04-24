@@ -21,11 +21,13 @@ public class MovieDetailScreen {
     private Runnable onAccount;
     private Runnable onPayments;
 
-    public MovieDetailScreen(Stage stage, GuiClient app, Runnable onBack, Runnable onLogout, String[] movie) {
+    public MovieDetailScreen(Stage stage, GuiClient app, Runnable onBack, Runnable onLogout, Runnable onAccount, Runnable onPayments, String[] movie) {
         this.stage   = stage;
         this.app     = app;
         this.onBack  = onBack;
         this.onLogout = onLogout;
+        this.onAccount = onAccount;
+        this.onPayments = onPayments;
         this.movie  = movie;
     }
 
