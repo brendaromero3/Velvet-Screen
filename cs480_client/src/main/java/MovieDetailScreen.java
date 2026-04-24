@@ -248,7 +248,7 @@ public class MovieDetailScreen {
         for (String[] screen : screening) {
             String DandT = screen[6];
             String theater = screen[7];
-            String seats = screen[12];
+            String seats = screen[11];
             int price = 15;
 
             boolean is3D = false;

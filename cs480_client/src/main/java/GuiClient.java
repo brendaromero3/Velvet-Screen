@@ -857,4 +857,93 @@ public class GuiClient extends Application {
 
         return results;
     }
+
+    public boolean book(int screening_id, int num_tickets, double price, String card_num) {
+        try {
+            int sale_id;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT COALESCE(MAX(sale_id), 0) + 1 FROM ticket_sale")) {
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                sale_id = rs.getInt("movie_id");
+            }
+
+            String query = "INSERT INTO ticket_sale (sale_id, user_id, screening_id, " +
+                    "num_tickets, purchase_date, total_price, card_number) VALUES " +
+                    "(?,?,?,?,CURRENT_TIMESTAMP,?,?);";
+
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, sale_id);
+                stmt.setInt(2, user_id);
+                stmt.setInt(3, screening_id);
+                stmt.setInt(4, num_tickets);
+                stmt.setDouble(5, price);
+                stmt.setString(6, card_num);
+                stmt.executeUpdate();
+            }
+
+            String query2 = "UPDATE membership SET movies_watched = movies_watched + 1 WHERE membership_id = ?;";
+            try (PreparedStatement stmt = conn.prepareStatement(query2)) {
+                stmt.setInt(1, membership_id);
+                stmt.executeUpdate();
+            }
+
+            int num_watched;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT movies_watched FROM membership WHERE membership_id = ?;")) {
+                stmt.setInt(1, membership_id);
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                num_watched = rs.getInt("movies_watched");
+            }
+
+            if (num_watched % 10 == 0) {
+                String query3 = "UPDATE membership SET num_free_earned = num_free_earned + 1 WHERE membership_id = ?;";
+                try (PreparedStatement stmt = conn.prepareStatement(query3)) {
+                    stmt.setInt(1, membership_id);
+                    stmt.executeUpdate();
+                }
+            }
+
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            try { conn.rollback(); } catch (Exception ex) { System.out.println("Rollback error: " + ex); }
+            return false;
+        }
+    }
+
+    public int freeTickets(int num_tickets) {
+        try{
+            int num_free;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT num_free_earned FROM membership WHERE membership_id = ?;")) {
+                stmt.setInt(1, membership_id);
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                num_free = rs.getInt("movies_watched");
+            }
+
+            if (num_free == 0) {
+                return 0;
+            } else if (num_free > num_tickets) {
+                num_free = num_tickets;
+            }
+
+            String query = "UPDATE membership SET num_free_earned = num_free_earned - ? WHERE membership_id = ?;";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, num_free);
+                stmt.setInt(2, membership_id);
+                stmt.executeUpdate();
+            }
+
+            conn.commit();
+            return num_free;
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            try { conn.rollback(); } catch (Exception ex) { System.out.println("Rollback error: " + ex); }
+            return 0;
+        }
+    }
 }
