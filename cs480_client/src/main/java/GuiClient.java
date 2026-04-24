@@ -45,6 +45,7 @@ public class GuiClient extends Application {
     public Runnable goToLogin;
     public Runnable goToRegister;
     public Runnable goToBrowse;
+    public Runnable goToPayments;
 
     public Consumer<String[]> goToMovieDetail;
 
@@ -63,8 +64,8 @@ public class GuiClient extends Application {
         Runnable[] goToLandingArr  = new Runnable[1];
         Runnable[] goToLoginArr    = new Runnable[1];
         Runnable[] goToRegisterArr = new Runnable[1];
-        Runnable[] goToBrowseArr = new Runnable[1];
-//        Runnable[] goToMovieDetailArr = new Runnable[1];
+        Runnable[] goToBrowseArr   = new Runnable[1];
+        Runnable[] goToPaymentsArr = new Runnable[1];
 
         goToLandingArr[0] = () -> {
             primaryStage.setScene(new LandingScreen(primaryStage, goToLoginArr[0], goToRegisterArr[0]).getScene());
@@ -82,7 +83,7 @@ public class GuiClient extends Application {
         };
 
         goToBrowseArr[0] = () -> {
-            primaryStage.setScene(new BrowseScreen(primaryStage, this, null, goToLandingArr[0], goToLoginArr[0], null, null, goToMovieDetail).getScene());
+            primaryStage.setScene(new BrowseScreen(primaryStage, this, null, goToLandingArr[0], goToLoginArr[0], null, goToPaymentsArr[0], goToMovieDetail).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
@@ -91,10 +92,22 @@ public class GuiClient extends Application {
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
+        goToPaymentsArr[0] = () -> {
+            primaryStage.setScene(new PaymentMethodsScreen(
+                primaryStage, this,
+                goToLandingArr[0],
+                goToLandingArr[0],
+                goToBrowseArr[0],
+                () -> System.out.println("Go to account")
+            ).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
+
         goToLanding  = goToLandingArr[0];
         goToLogin    = goToLoginArr[0];
         goToRegister = goToRegisterArr[0];
-        goToBrowse = goToBrowseArr[0];
+        goToBrowse   = goToBrowseArr[0];
+        goToPayments = goToPaymentsArr[0];
 
         primaryStage.setTitle("Velvet Screen");
         primaryStage.setScene(new LandingScreen(primaryStage, goToLogin, goToRegister).getScene());
@@ -195,25 +208,24 @@ public class GuiClient extends Application {
                                         ClientDashboard db = new ClientDashboard(stage, this, goToLanding,
                                             (s) -> {
                                                 stage.setScene(new BrowseScreen(stage, this, s,
-                                                    null, goToLanding, null, null, null).getScene());
+                                                    null, goToLanding, null, goToPayments, goToMovieDetail).getScene());
                                                 stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                                             },
                                             () -> System.out.println("Go to account"),
-                                            () -> System.out.println("Go to payments")
+                                            goToPayments
                                         );
                                         stage.setScene(db.getScene());
                                         stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                                     },
                                     goToLanding,
                                     () -> System.out.println("Go to account"),
-                                    () -> System.out.println("Go to payments"),
-//                                    (movie) -> System.out.println("View details: " + movie[1])
+                                    goToPayments,
                                     (movie) -> goToMovieDetail.accept(movie)
                                 ).getScene());
                                 stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                             },
                             () -> System.out.println("Go to account"),
-                            () -> System.out.println("Go to payments")
+                            goToPayments
                         );
                         stage.setScene(dashboard.getScene());
                         stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
@@ -346,7 +358,7 @@ public class GuiClient extends Application {
                     rs.getString("is_3d"),
                     rs.getString("fancy_sound"),
                     rs.getString("seats_available"),
-                        rs.getString("length")
+                    rs.getString("length")
                 });
             }
         } catch (Exception e) {
@@ -356,23 +368,20 @@ public class GuiClient extends Application {
         return results;
     }
 
-    // Get all Actors for a specfic movie
+    // Get all Actors for a specific movie
     public List<String[]> getActors(String movieId) {
         List<String[]> results = new ArrayList<>();
-
         String query = "SELECT p.name, a.character_name " +
                 "FROM actors a " +
                 "JOIN persons p on a.person_id = p.person_id " +
                 "WHERE a.movie_id = ?";
-
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, Integer.parseInt(movieId));
-
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 results.add(new String[]{
-                        rs.getString("name"),
-                        rs.getString("character_name")
+                    rs.getString("name"),
+                    rs.getString("character_name")
                 });
             }
         } catch (Exception e) {
@@ -381,23 +390,18 @@ public class GuiClient extends Application {
         return results;
     }
 
-    // Get all Directors for a specfic movie
+    // Get all Directors for a specific movie
     public List<String[]> getDirectors(String movieId) {
         List<String[]> results = new ArrayList<>();
-
         String query = "SELECT p.name " +
                 "FROM directors d " +
                 "JOIN persons p on d.person_id = p.person_id " +
                 "WHERE d.movie_id = ?";
-
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, Integer.parseInt(movieId));
-
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                results.add(new String[]{
-                        rs.getString("name"),
-                });
+                results.add(new String[]{ rs.getString("name") });
             }
         } catch (Exception e) {
             System.out.println("Error getting directors: " + e.getMessage());
@@ -405,23 +409,18 @@ public class GuiClient extends Application {
         return results;
     }
 
-    // Get all Writers for a specfic movie
+    // Get all Writers for a specific movie
     public List<String[]> getWriters(String movieId) {
         List<String[]> results = new ArrayList<>();
-
         String query = "SELECT p.name " +
                 "FROM writers w " +
                 "JOIN persons p on w.person_id = p.person_id " +
                 "WHERE w.movie_id = ?";
-
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, Integer.parseInt(movieId));
-
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                results.add(new String[]{
-                        rs.getString("name"),
-                });
+                results.add(new String[]{ rs.getString("name") });
             }
         } catch (Exception e) {
             System.out.println("Error getting writers: " + e.getMessage());
@@ -429,23 +428,18 @@ public class GuiClient extends Application {
         return results;
     }
 
-    // Get all Producers for a specfic movie
+    // Get all Producers for a specific movie
     public List<String[]> getProducers(String movieId) {
         List<String[]> results = new ArrayList<>();
-
         String query = "SELECT p.name " +
                 "FROM producers pr " +
                 "JOIN persons p on pr.person_id = p.person_id " +
                 "WHERE pr.movie_id = ?";
-
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, Integer.parseInt(movieId));
-
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                results.add(new String[]{
-                        rs.getString("name"),
-                });
+                results.add(new String[]{ rs.getString("name") });
             }
         } catch (Exception e) {
             System.out.println("Error getting producers: " + e.getMessage());
@@ -462,7 +456,6 @@ public class GuiClient extends Application {
                 stmt.setInt(2, user_id);
                 stmt.executeUpdate();
             }
-
             if (billing_addr != null && !billing_addr.isBlank()) {
                 String query2 = "INSERT INTO credit VALUES (?,?);";
                 try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
@@ -471,11 +464,11 @@ public class GuiClient extends Application {
                     stmt2.executeUpdate();
                 }
             }
-
             conn.commit();
             return true;
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            try { conn.rollback(); } catch (Exception ex) { System.out.println("Rollback error: " + ex); }
             return false;
         }
     }
@@ -491,14 +484,12 @@ public class GuiClient extends Application {
                     stmt2.executeUpdate();
                 }
             }
-
             String query = "DELETE FROM card_info WHERE card_number = ? AND user_id = ?;";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setString(1, card_num);
                 stmt.setInt(2, user_id);
                 stmt.executeUpdate();
             }
-
             conn.commit();
             return true;
         } catch (Exception e) {
@@ -517,7 +508,6 @@ public class GuiClient extends Application {
                 stmt.setString(3, old_billing_addr);
                 stmt.executeUpdate();
             }
-
             if (billing_addr != null && !billing_addr.isBlank()) {
                 String query2 = "UPDATE credit SET billing_address = ? WHERE card_number = ?;";
                 try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
@@ -526,7 +516,6 @@ public class GuiClient extends Application {
                     stmt2.executeUpdate();
                 }
             }
-
             conn.commit();
             return true;
         } catch (Exception e) {
@@ -536,18 +525,16 @@ public class GuiClient extends Application {
     }
 
     // Schedule a movie screening
-    public boolean schedule (String movieName, int theater_id, String date, String time) {
+    public boolean schedule(String movieName, int theater_id, String date, String time) {
         int movie_id;
         try {
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT movie_id FROM movies WHERE title = ?")){
+                    "SELECT movie_id FROM movies WHERE title = ?")) {
                 stmt.setString(1, movieName);
-
                 ResultSet rs = stmt.executeQuery();
                 rs.next();
                 movie_id = rs.getInt("movie_id");
             }
-
             int newScreeningId;
             try (PreparedStatement stmt = conn.prepareStatement(
                     "SELECT COALESCE(MAX(screening_id), 0) + 1 FROM screening")) {
@@ -555,7 +542,6 @@ public class GuiClient extends Application {
                 rs.next();
                 newScreeningId = rs.getInt(1);
             }
-
             try (PreparedStatement stmt = conn.prepareStatement(
                     "INSERT INTO screening (screening_id, movie_id, theater_id, date_time) VALUES (?, ?, ?, ?::TIMESTAMP)")) {
                 stmt.setInt(1, newScreeningId);
@@ -564,7 +550,6 @@ public class GuiClient extends Application {
                 stmt.setString(4, (date + time));
                 stmt.executeUpdate();
             }
-
             conn.commit();
             return true;
         } catch (Exception e) {
@@ -573,57 +558,73 @@ public class GuiClient extends Application {
         }
     }
 
-    // Monitor movie screenings
-    public int monitor (String movieName, String date_time) {
+    // Monitor movie screenings — returns remaining seat capacity
+    public int monitor(String movieName, String date_time) {
         try {
             int movie_id;
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT movie_id FROM movies WHERE title = ?")){
+                    "SELECT movie_id FROM movies WHERE title = ?")) {
                 stmt.setString(1, movieName);
-
                 ResultSet rs = stmt.executeQuery();
                 rs.next();
                 movie_id = rs.getInt("movie_id");
             }
-
             int screening_id;
             int theater_id;
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT screening_id, theater_id FROM screening WHERE movie_id = ? AND date_time = ?::TIMESTAMP")){
+                    "SELECT screening_id, theater_id FROM screening WHERE movie_id = ? AND date_time = ?::TIMESTAMP")) {
                 stmt.setInt(1, movie_id);
-                stmt.setString(2, date_time);
-
+                stmt.setString(2, date_time); // fixed bug: was setString(1)
                 ResultSet rs = stmt.executeQuery();
                 rs.next();
                 screening_id = rs.getInt("screening_id");
-                theater_id = rs.getInt("theater_id");
+                theater_id   = rs.getInt("theater_id");
             }
-
             int max_capacity;
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT max_occupancy FROM theater WHERE theater_id = ?")){
+                    "SELECT max_occupancy FROM theater WHERE theater_id = ?")) {
                 stmt.setInt(1, theater_id);
-
                 ResultSet rs = stmt.executeQuery();
                 rs.next();
                 max_capacity = rs.getInt("max_occupancy");
             }
-
             int sold;
             try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT SUM(num_tickets) FROM ticket_sale WHERE screening_id = ?")){
+                    "SELECT SUM(num_tickets) FROM ticket_sale WHERE screening_id = ?")) {
                 stmt.setInt(1, screening_id);
-
                 ResultSet rs = stmt.executeQuery();
                 rs.next();
                 sold = rs.getInt(1);
             }
-
             return max_capacity - sold;
-
         } catch (Exception e) {
             System.out.println("Error: " + e);
             return -1;
         }
+    }
+
+    // Get all payment methods for the logged in user
+    public List<String[]> getPaymentMethods() {
+        List<String[]> results = new ArrayList<>();
+        String query = "SELECT ci.card_number, " +
+                "CASE WHEN cr.card_number IS NOT NULL THEN 'Credit' ELSE 'Debit' END AS card_type, " +
+                "cr.billing_address " +
+                "FROM card_info ci " +
+                "LEFT JOIN credit cr ON ci.card_number = cr.card_number " +
+                "WHERE ci.user_id = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, user_id);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(new String[]{
+                    rs.getString("card_number"),
+                    rs.getString("card_type"),
+                    rs.getString("billing_address")
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting payment methods: " + e.getMessage());
+        }
+        return results;
     }
 }
