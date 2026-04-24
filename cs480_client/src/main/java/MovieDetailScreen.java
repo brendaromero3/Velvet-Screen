@@ -352,10 +352,10 @@ public class MovieDetailScreen {
         Boolean years = date.isBefore(minus2Years);
 
         if (years) {
-            price *= 0.8; // 80% of original price/20% off
-        }
-        if (months) {
             price *= 0.6; // 60% of original price/40% off
+        }
+        else if (months) {
+            price *= 0.8; // 80% of original price/20% off
         }
 
         return price;
