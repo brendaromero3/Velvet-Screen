@@ -203,8 +203,19 @@ public class GuiClient extends Application {
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
-        
-        goToAdminTheatersArr[0]   = () -> System.out.println("Go to admin theaters");
+
+        goToAdminTheatersArr[0] = () -> {
+            primaryStage.setScene(new AdminTheatersScreen(
+                primaryStage, this,
+                goToAdminDashboardArr[0],
+                goToLandingArr[0],
+                goToAdminScreeningsArr[0],
+                goToAdminAnalyticsArr[0],
+                goToAdminMoviesArr[0],
+                goToAdminPeopleArr[0]
+            ).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
 
         goToLanding  = goToLandingArr[0];
         goToLogin    = goToLoginArr[0];
@@ -1192,6 +1203,74 @@ public class GuiClient extends Application {
             return true;
         } catch (Exception e) {
             System.out.println("Error deleting person: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+            return false;
+        }
+    }
+
+    // Get all theaters for admin management
+    public List<String[]> getAllTheaters() {
+        List<String[]> results = new ArrayList<>();
+        String query = "SELECT theater_id, max_occupancy, is_3d, fancy_sound FROM theater ORDER BY theater_id;";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(new String[]{
+                    rs.getString("theater_id"),
+                    rs.getString("max_occupancy"),
+                    rs.getString("is_3d"),
+                    rs.getString("fancy_sound")
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting theaters: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+        }
+        return results;
+    }
+
+    // Update theater
+    public boolean updateTheater(int theaterId, int capacity, boolean is3d, boolean fancySound) {
+        try {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE theater SET max_occupancy = ?, is_3d = ?, fancy_sound = ? WHERE theater_id = ?")) {
+                stmt.setInt(1, capacity);
+                stmt.setBoolean(2, is3d);
+                stmt.setBoolean(3, fancySound);
+                stmt.setInt(4, theaterId);
+                stmt.executeUpdate();
+            }
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error updating theater: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+            return false;
+        }
+    }
+
+    // Add a new theater
+    public boolean addTheater(int capacity, boolean is3d, boolean fancySound) {
+        try {
+            int newTheaterId;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT COALESCE(MAX(theater_id), 0) + 1 FROM theater")) {
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                newTheaterId = rs.getInt(1);
+            }
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "INSERT INTO theater (theater_id, max_occupancy, is_3d, fancy_sound) VALUES (?, ?, ?, ?)")) {
+                stmt.setInt(1, newTheaterId);
+                stmt.setInt(2, capacity);
+                stmt.setBoolean(3, is3d);
+                stmt.setBoolean(4, fancySound);
+                stmt.executeUpdate();
+            }
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error adding theater: " + e.getMessage());
             try { conn.rollback(); } catch (Exception ex) {}
             return false;
         }
