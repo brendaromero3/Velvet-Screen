@@ -224,9 +224,11 @@ public class AdminPeopleScreen {
         Label hBirthdate = new Label("BIRTHDATE"); hBirthdate.setStyle(headerStyle); hBirthdate.setPrefWidth(120);
         Label hBio       = new Label("BIO");       hBio.setStyle(headerStyle);       hBio.setPrefWidth(300);
         Label hAwards    = new Label("AWARDS");    hAwards.setStyle(headerStyle);    hAwards.setPrefWidth(80);
-        Label hActions   = new Label("ACTIONS");   hActions.setStyle(headerStyle);   HBox.setHgrow(hActions, Priority.ALWAYS);
+        Region headerSpacer = new Region();
+        HBox.setHgrow(headerSpacer, Priority.ALWAYS);
+        Label hActions = new Label("ACTIONS"); hActions.setStyle(headerStyle);
 
-        HBox tableHeader = new HBox(hName, hBirthdate, hBio, hAwards, hActions);
+        HBox tableHeader = new HBox(hName, hBirthdate, hBio, hAwards, headerSpacer, hActions);
         tableHeader.setPadding(new Insets(12, 16, 12, 16));
         tableBox.getChildren().add(tableHeader);
 
@@ -286,7 +288,9 @@ public class AdminPeopleScreen {
                     if (deleted) reloadRef[0].run();
                 });
 
-                HBox actions = new HBox(6, deleteBtn);
+                Region rowSpacer = new Region();
+                HBox.setHgrow(rowSpacer, Priority.ALWAYS);
+                HBox actions = new HBox(rowSpacer, deleteBtn);
                 HBox.setHgrow(actions, Priority.ALWAYS);
 
                 HBox row = new HBox(rName, rBirthdate, rBio, rAwards, actions);

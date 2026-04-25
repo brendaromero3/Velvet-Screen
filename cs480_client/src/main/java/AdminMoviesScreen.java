@@ -262,9 +262,11 @@ public class AdminMoviesScreen {
         Label hLength   = new Label("LENGTH");    hLength.setStyle(headerStyle);   hLength.setPrefWidth(80);
         Label hMajor    = new Label("MAJOR");     hMajor.setStyle(headerStyle);    hMajor.setPrefWidth(80);
         Label hDirector = new Label("DIRECTOR");  hDirector.setStyle(headerStyle); hDirector.setPrefWidth(180);
-        Label hActions  = new Label("ACTIONS");   hActions.setStyle(headerStyle);  HBox.setHgrow(hActions, Priority.ALWAYS);
+        Region headerSpacer = new Region();
+        HBox.setHgrow(headerSpacer, Priority.ALWAYS);
+        Label hActions = new Label("ACTIONS"); hActions.setStyle(headerStyle);
 
-        HBox tableHeader = new HBox(hTitle, hLang, hYear, hLength, hMajor, hDirector, hActions);
+        HBox tableHeader = new HBox(hTitle, hLang, hYear, hLength, hMajor, hDirector, headerSpacer, hActions);
         tableHeader.setPadding(new Insets(12, 16, 12, 16));
         tableBox.getChildren().add(tableHeader);
 
@@ -327,7 +329,9 @@ public class AdminMoviesScreen {
                     if (deleted) reloadRef[0].run();
                 });
 
-                HBox actions = new HBox(6, deleteBtn);
+                Region rowSpacer = new Region();
+                HBox.setHgrow(rowSpacer, Priority.ALWAYS);
+                HBox actions = new HBox(rowSpacer, deleteBtn);
                 HBox.setHgrow(actions, Priority.ALWAYS);
 
                 HBox row = new HBox(rTitle, rLang, rYear, rLength, rMajor, rDirector, actions);
