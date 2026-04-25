@@ -48,6 +48,12 @@ public class GuiClient extends Application {
     public Runnable goToPayments;
     public Runnable goToAccount;
     public Runnable goToDashboard;
+    public Runnable goToAdminDashboard;
+    public Runnable goToAdminScreenings;
+    public Runnable goToAdminAnalytics;
+    public Runnable goToAdminMovies;
+    public Runnable goToAdminPeople;
+    public Runnable goToAdminTheaters;
 
     public Consumer<String[]> goToMovieDetail;
 
@@ -70,6 +76,12 @@ public class GuiClient extends Application {
         Runnable[] goToPaymentsArr = new Runnable[1];
         Runnable[] goToAccountArr = new Runnable[1];
         Runnable[] goToDashboardArr = new Runnable[1];
+        Runnable[] goToAdminDashboardArr  = new Runnable[1];
+        Runnable[] goToAdminScreeningsArr = new Runnable[1];
+        Runnable[] goToAdminAnalyticsArr  = new Runnable[1];
+        Runnable[] goToAdminMoviesArr     = new Runnable[1];
+        Runnable[] goToAdminPeopleArr     = new Runnable[1];
+        Runnable[] goToAdminTheatersArr   = new Runnable[1];
 
         goToLandingArr[0] = () -> {
             primaryStage.setScene(new LandingScreen(primaryStage, goToLoginArr[0], goToRegisterArr[0]).getScene());
@@ -127,6 +139,25 @@ public class GuiClient extends Application {
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
+        goToAdminDashboardArr[0] = () -> {
+            primaryStage.setScene(new AdminDashboard(
+                primaryStage, this,
+                goToLandingArr[0],
+                goToAdminScreeningsArr[0],
+                goToAdminAnalyticsArr[0],
+                goToAdminMoviesArr[0],
+                goToAdminPeopleArr[0],
+                goToAdminTheatersArr[0]
+            ).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
+
+        goToAdminScreeningsArr[0] = () -> System.out.println("Go to admin screenings");
+        goToAdminAnalyticsArr[0]  = () -> System.out.println("Go to admin analytics");
+        goToAdminMoviesArr[0]     = () -> System.out.println("Go to admin movies");
+        goToAdminPeopleArr[0]     = () -> System.out.println("Go to admin people");
+        goToAdminTheatersArr[0]   = () -> System.out.println("Go to admin theaters");
+
         goToLanding  = goToLandingArr[0];
         goToLogin    = goToLoginArr[0];
         goToRegister = goToRegisterArr[0];
@@ -134,6 +165,12 @@ public class GuiClient extends Application {
         goToPayments = goToPaymentsArr[0];
         goToAccount = goToAccountArr[0];
         goToDashboard = goToDashboardArr[0];
+        goToAdminDashboard  = goToAdminDashboardArr[0];
+        goToAdminScreenings = goToAdminScreeningsArr[0];
+        goToAdminAnalytics  = goToAdminAnalyticsArr[0];
+        goToAdminMovies     = goToAdminMoviesArr[0];
+        goToAdminPeople     = goToAdminPeopleArr[0];
+        goToAdminTheaters   = goToAdminTheatersArr[0];
 
         primaryStage.setTitle("Velvet Screen");
         primaryStage.setScene(new LandingScreen(primaryStage, goToLogin, goToRegister).getScene());
@@ -220,8 +257,18 @@ public class GuiClient extends Application {
             if (rs.next()) {
                 user_id = rs.getInt("user_id");
                 if (isAdmin(user_id)) {
-                    System.out.println("Admin logged in!");
-                    // TODO: go to admin dashboard
+                    Platform.runLater(() -> {
+                        stage.setScene(new AdminDashboard(
+                            stage, this,
+                            goToLanding,
+                            goToAdminScreenings,
+                            goToAdminAnalytics,
+                            goToAdminMovies,
+                            goToAdminPeople,
+                            goToAdminTheaters
+                        ).getScene());
+                        stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+                    });
                 } else {
                     getMembershipId(user_id);
                     Platform.runLater(() -> {
@@ -751,7 +798,7 @@ public class GuiClient extends Application {
 
         String query = "SELECT am.theater_id, s.screening_id, m.title, " +
                 "COALESCE(SUM(ts.total_price), 0.00), COALESCE(SUM(ts.num_tickets), 0), " +
-                "t.max_capacity FROM administrator_manages am " +
+                "t.max_occupancy FROM administrator_manages am " +
                 "JOIN theater t ON am.theater_id = t.theater_id " +
                 "JOIN screening s ON t.theater_id = s.theater_id " +
                 "JOIN movies m ON s.movie_id = m.movie_id " +
@@ -773,6 +820,7 @@ public class GuiClient extends Application {
             }
         } catch (Exception e) {
             System.out.println("Error getting screening stats: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
         }
 
         return results;
@@ -813,6 +861,7 @@ public class GuiClient extends Application {
             }
         } catch (Exception e) {
             System.out.println("Error getting movie stats: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
         }
 
         return results;
@@ -859,6 +908,7 @@ public class GuiClient extends Application {
             }
         } catch (Exception e) {
             System.out.println("Error getting theater stats: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
         }
 
         return results;
