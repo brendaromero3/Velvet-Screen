@@ -342,8 +342,8 @@ public class AdminTheatersScreen {
             }
 
             for (String[] theater : theaters) {
-                String is3dStr  = "true".equals(theater[2]) ? "Yes" : "No";
-                String soundStr = "true".equals(theater[3]) ? "Yes" : "No";
+                String is3dStr  = "t".equals(theater[2]) ? "Yes" : "No";
+                String soundStr = "t".equals(theater[3]) ? "Yes" : "No";
 
                 String rowStyle =
                     "-fx-font-family: 'Questrial';" +
@@ -372,8 +372,8 @@ public class AdminTheatersScreen {
                 editBtn.setOnAction(e -> {
                     editingId[0] = theaterId;
                     editCapField.setText(theater[1]);
-                    edit3dBox.setSelected("true".equals(theater[2]));
-                    editSoundBox.setSelected("true".equals(theater[3]));
+                    edit3dBox.setSelected("t".equals(theater[2]));
+                    editSoundBox.setSelected("t".equals(theater[3]));
                     editError.setText("");
                     inlineEditBox.setVisible(true);
                     inlineEditBox.setManaged(true);

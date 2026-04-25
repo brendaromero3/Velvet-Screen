@@ -295,7 +295,7 @@ public class AdminMoviesScreen {
                 String year     = movie[3] != null && movie[3].length() >= 4 ? movie[3].substring(0, 4) : "";
                 int    lengthMin = movie[4] != null ? Integer.parseInt(movie[4]) : 0;
                 String lengthStr = (lengthMin / 60) + "h " + (lengthMin % 60) + "m";
-                String major    = "true".equals(movie[5]) ? "Yes" : "No";
+                String major    = "t".equals(movie[5]) ? "Yes" : "No";
                 String director = movie[6] != null ? movie[6] : "—";
 
                 String rowStyle =
