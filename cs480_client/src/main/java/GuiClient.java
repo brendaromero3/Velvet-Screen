@@ -165,7 +165,19 @@ public class GuiClient extends Application {
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
-        goToAdminAnalyticsArr[0]  = () -> System.out.println("Go to admin analytics");
+        goToAdminAnalyticsArr[0] = () -> {
+            primaryStage.setScene(new AdminAnalyticsScreen(
+                primaryStage, this,
+                goToAdminDashboardArr[0],
+                goToLandingArr[0],
+                goToAdminScreeningsArr[0],
+                goToAdminMoviesArr[0],
+                goToAdminPeopleArr[0],
+                goToAdminTheatersArr[0]
+            ).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
+
         goToAdminMoviesArr[0]     = () -> System.out.println("Go to admin movies");
         goToAdminPeopleArr[0]     = () -> System.out.println("Go to admin people");
         goToAdminTheatersArr[0]   = () -> System.out.println("Go to admin theaters");
@@ -852,12 +864,11 @@ public class GuiClient extends Application {
         // total tickets sold per movie - stat.seatsSold
 
         String query = "SELECT m.title, t.theater_id, COALESCE(SUM(ts.total_price), 0.00), " +
-                "COALESCE(SUM(ts.num_tickets), 0) FROM administrator_manages am " +
-                "JOIN theater t ON am.theater_id = t.theater_id " +
+                "COALESCE(SUM(ts.num_tickets), 0) FROM theater t " +
                 "JOIN screening s ON t.theater_id = s.theater_id " +
                 "JOIN movies m ON s.movie_id = m.movie_id " +
-                "JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
-                "GROUP BY m.movie_id, t.theater_id " +
+                "LEFT JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
+                "GROUP BY m.movie_id, m.title, t.theater_id " +
                 "ORDER BY m.movie_id;";
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -897,11 +908,9 @@ public class GuiClient extends Application {
         String query = "SELECT t.theater_id, COALESCE(SUM(ts.total_price), 0.00), " +
                 "COALESCE(SUM(ts.num_tickets), 0), AVG(ts.num_tickets::FLOAT), " +
                 "MIN(ts.num_tickets), MAX(ts.num_tickets) " +
-                "FROM administrator_manages am " +
-                "JOIN theater t ON am.theater_id = t.theater_id " +
+                "FROM theater t " +
                 "JOIN screening s ON t.theater_id = s.theater_id " +
-                "JOIN movies m ON s.movie_id = m.movie_id " +
-                "JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
+                "LEFT JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
                 "GROUP BY t.theater_id " +
                 "ORDER BY t.theater_id;";
 
