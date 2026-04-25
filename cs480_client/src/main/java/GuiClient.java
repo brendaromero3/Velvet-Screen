@@ -190,8 +190,20 @@ public class GuiClient extends Application {
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
+
+        goToAdminPeopleArr[0] = () -> {
+            primaryStage.setScene(new AdminPeopleScreen(
+                primaryStage, this,
+                goToAdminDashboardArr[0],
+                goToLandingArr[0],
+                goToAdminScreeningsArr[0],
+                goToAdminAnalyticsArr[0],
+                goToAdminMoviesArr[0],
+                goToAdminTheatersArr[0]
+            ).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
         
-        goToAdminPeopleArr[0]     = () -> System.out.println("Go to admin people");
         goToAdminTheatersArr[0]   = () -> System.out.println("Go to admin theaters");
 
         goToLanding  = goToLandingArr[0];
@@ -1109,6 +1121,77 @@ public class GuiClient extends Application {
             return true;
         } catch (Exception e) {
             System.out.println("Error deleting movie: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+            return false;
+        }
+    }
+
+    // Get all people for admin management
+    public List<String[]> getAllPeople() {
+        List<String[]> results = new ArrayList<>();
+        String query = "SELECT p.person_id, p.name, p.birthdate, p.biography, " +
+                    "COUNT(DISTINCT aw.award_id) AS award_count " +
+                    "FROM persons p " +
+                    "LEFT JOIN awarded aw ON p.person_id = aw.person_id " +
+                    "GROUP BY p.person_id, p.name, p.birthdate, p.biography " +
+                    "ORDER BY p.name;";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(new String[]{
+                    rs.getString("person_id"),
+                    rs.getString("name"),
+                    rs.getString("birthdate"),
+                    rs.getString("biography"),
+                    rs.getString("award_count")
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting all people: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+        }
+        return results;
+    }
+
+    // Add a new person
+    public boolean addPerson(String name, String birthdate, String biography) {
+        try {
+            int newPersonId;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT COALESCE(MAX(person_id), 0) + 1 FROM persons")) {
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                newPersonId = rs.getInt(1);
+            }
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "INSERT INTO persons (person_id, name, birthdate, biography) VALUES (?, ?, ?::DATE, ?)")) {
+                stmt.setInt(1, newPersonId);
+                stmt.setString(2, name);
+                stmt.setString(3, birthdate);
+                stmt.setString(4, biography);
+                stmt.executeUpdate();
+            }
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error adding person: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+            return false;
+        }
+    }
+
+    // Delete a person
+    public boolean deletePerson(int personId) {
+        try {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "DELETE FROM persons WHERE person_id = ?")) {
+                stmt.setInt(1, personId);
+                stmt.executeUpdate();
+            }
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error deleting person: " + e.getMessage());
             try { conn.rollback(); } catch (Exception ex) {}
             return false;
         }
