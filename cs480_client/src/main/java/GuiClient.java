@@ -152,7 +152,19 @@ public class GuiClient extends Application {
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
-        goToAdminScreeningsArr[0] = () -> System.out.println("Go to admin screenings");
+        goToAdminScreeningsArr[0] = () -> {
+            primaryStage.setScene(new AdminScreeningsScreen(
+                primaryStage, this,
+                goToAdminDashboardArr[0],
+                goToLandingArr[0],
+                goToAdminAnalyticsArr[0],
+                goToAdminMoviesArr[0],
+                goToAdminPeopleArr[0],
+                goToAdminTheatersArr[0]
+            ).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
+
         goToAdminAnalyticsArr[0]  = () -> System.out.println("Go to admin analytics");
         goToAdminMoviesArr[0]     = () -> System.out.println("Go to admin movies");
         goToAdminPeopleArr[0]     = () -> System.out.println("Go to admin people");
@@ -796,15 +808,14 @@ public class GuiClient extends Application {
         // revenue per screening - stat.revenue
         // percentage of seats sold per screening - seatsSold/capacity
 
-        String query = "SELECT am.theater_id, s.screening_id, m.title, " +
-                "COALESCE(SUM(ts.total_price), 0.00), COALESCE(SUM(ts.num_tickets), 0), " +
-                "t.max_occupancy FROM administrator_manages am " +
-                "JOIN theater t ON am.theater_id = t.theater_id " +
-                "JOIN screening s ON t.theater_id = s.theater_id " +
-                "JOIN movies m ON s.movie_id = m.movie_id " +
-                "JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
-                "GROUP BY s.screening_id " +
-                "ORDER BY t.theater_id;";
+        String query = "SELECT t.theater_id, s.screening_id, m.title, " +
+        "COALESCE(SUM(ts.total_price), 0.00), COALESCE(SUM(ts.num_tickets), 0), " +
+        "t.max_occupancy FROM theater t " +
+        "JOIN screening s ON t.theater_id = s.theater_id " +
+        "JOIN movies m ON s.movie_id = m.movie_id " +
+        "LEFT JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
+        "GROUP BY t.theater_id, s.screening_id, m.title, t.max_occupancy " +
+        "ORDER BY t.theater_id;";
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
