@@ -178,7 +178,19 @@ public class GuiClient extends Application {
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
-        goToAdminMoviesArr[0]     = () -> System.out.println("Go to admin movies");
+        goToAdminMoviesArr[0] = () -> {
+            primaryStage.setScene(new AdminMoviesScreen(
+                primaryStage, this,
+                goToAdminDashboardArr[0],
+                goToLandingArr[0],
+                goToAdminScreeningsArr[0],
+                goToAdminAnalyticsArr[0],
+                goToAdminPeopleArr[0],
+                goToAdminTheatersArr[0]
+            ).getScene());
+            primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+        };
+        
         goToAdminPeopleArr[0]     = () -> System.out.println("Go to admin people");
         goToAdminTheatersArr[0]   = () -> System.out.println("Go to admin theaters");
 
@@ -1020,6 +1032,85 @@ public class GuiClient extends Application {
             System.out.println("Error: " + e);
             try { conn.rollback(); } catch (Exception ex) { System.out.println("Rollback error: " + ex); }
             return 0;
+        }
+    }
+
+    // Get all movies for admin management
+    public List<String[]> getAllMovies() {
+        List<String[]> results = new ArrayList<>();
+        String query = "SELECT m.movie_id, m.title, m.original_language, m.release_date, " +
+                    "m.length, m.major_studio, " +
+                    "STRING_AGG(DISTINCT p.name, ', ') AS directors " +
+                    "FROM movies m " +
+                    "LEFT JOIN directors d ON m.movie_id = d.movie_id " +
+                    "LEFT JOIN persons p ON d.person_id = p.person_id " +
+                    "GROUP BY m.movie_id, m.title, m.original_language, m.release_date, " +
+                    "m.length, m.major_studio " +
+                    "ORDER BY m.title;";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                results.add(new String[]{
+                    rs.getString("movie_id"),
+                    rs.getString("title"),
+                    rs.getString("original_language"),
+                    rs.getString("release_date"),
+                    rs.getString("length"),
+                    rs.getString("major_studio"),
+                    rs.getString("directors")
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting all movies: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+        }
+        return results;
+    }
+
+    // Add a new movie
+    public boolean addMovie(String title, String language, String releaseDate, int length, boolean majorStudio) {
+        try {
+            int newMovieId;
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT COALESCE(MAX(movie_id), 0) + 1 FROM movies")) {
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                newMovieId = rs.getInt(1);
+            }
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "INSERT INTO movies (movie_id, title, major_studio, original_language, release_date, length) " +
+                    "VALUES (?, ?, ?, ?, ?::DATE, ?)")) {
+                stmt.setInt(1, newMovieId);
+                stmt.setString(2, title);
+                stmt.setBoolean(3, majorStudio);
+                stmt.setString(4, language);
+                stmt.setString(5, releaseDate);
+                stmt.setInt(6, length);
+                stmt.executeUpdate();
+            }
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error adding movie: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+            return false;
+        }
+    }
+
+    // Delete a movie
+    public boolean deleteMovie(int movieId) {
+        try {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "DELETE FROM movies WHERE movie_id = ?")) {
+                stmt.setInt(1, movieId);
+                stmt.executeUpdate();
+            }
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error deleting movie: " + e.getMessage());
+            try { conn.rollback(); } catch (Exception ex) {}
+            return false;
         }
     }
 }
