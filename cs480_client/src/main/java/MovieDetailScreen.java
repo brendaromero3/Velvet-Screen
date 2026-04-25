@@ -65,22 +65,6 @@ public class MovieDetailScreen {
                         "-fx-background-color: " + LandingScreen.BG_COLOR + ";"
         );
 
-        // results area
-        VBox resultsBox = new VBox(8);
-        resultsBox.setFillWidth(true);
-
-        ScrollPane scroll = new ScrollPane(resultsBox);
-        scroll.setFitToWidth(true);
-        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scroll.setStyle(
-                "-fx-background: " + LandingScreen.BG_COLOR + ";" +
-                        "-fx-background-color: " + LandingScreen.BG_COLOR + ";" +
-                        "-fx-border-color: transparent;" +
-                        "-fx-focus-color: transparent;" +
-                        "-fx-faint-focus-color: transparent;"
-        );
-
         List<String[]> actors = app.getActors(movie[0]);
         List<String[]> directors = app.getDirectors(movie[0]);
         List<String[]> writers = app.getWriters(movie[0]);
@@ -100,7 +84,19 @@ public class MovieDetailScreen {
 
         GridPane table = screeningTable();
 
-        VBox content = new VBox(30, movieName, people, details, table, scroll);
+        ScrollPane scroll = new ScrollPane(table);
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroll.setStyle(
+                "-fx-background: " + LandingScreen.BG_COLOR + ";" +
+                        "-fx-background-color: " + LandingScreen.BG_COLOR + ";" +
+                        "-fx-border-color: transparent;" +
+                        "-fx-focus-color: transparent;" +
+                        "-fx-faint-focus-color: transparent;"
+        );
+
+        VBox content = new VBox(30, movieName, people, details, scroll);
         content.setPadding(new Insets(30, 40, 30, 40));
         VBox.setVgrow(scroll, Priority.ALWAYS);
 
@@ -241,7 +237,7 @@ public class MovieDetailScreen {
         headers(table, "Ticket Price", 4);
         headers(table, "Book", 5);
 
-        List<String[]> screening = app.getMovies(movie[1], null, null, null, null, null);
+        List<String[]> screening = app.getMovies(true, movie[1], null, null, null, null, null);
 
         // adding each screening to table
         int row = 1;
@@ -312,9 +308,7 @@ public class MovieDetailScreen {
 //            });
             table.add(book, 5, row); // adds the button the GridPane
 
-            // PROBLEM
-            int cap = Integer.parseInt(screen[8])- Integer.parseInt(screen[12]);
-            if (cap <= 0) {
+            if (Integer.parseInt(screen[11]) <= 0) {
                 book.setText("Sold Out");
                 book.setDisable(true);
             }

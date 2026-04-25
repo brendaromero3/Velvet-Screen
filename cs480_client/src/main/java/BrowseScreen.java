@@ -149,7 +149,7 @@ public class BrowseScreen {
                 }
             }
 
-            List<String[]> movies = app.getMovies(search, lang, genre, date, timeStart, timeEnd);
+            List<String[]> movies = app.getMovies(false, search, lang, genre, date, timeStart, timeEnd);
 
             if (movies.isEmpty()) {
                 Label noResults = new Label("No screenings found. Try a different search.");

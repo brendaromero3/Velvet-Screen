@@ -325,10 +325,16 @@ public class GuiClient extends Application {
     }
 
     // Get movie info based on search filters
-    public List<String[]> getMovies(String movieName, String language, String genre, String date, String timeStart, String timeEnd) {
+    public List<String[]> getMovies(boolean screenings, String movieName, String language, String genre, String date, String timeStart, String timeEnd) {
         List<String[]> results = new ArrayList<>();
 
-        String query = "SELECT DISTINCT ON (m.movie_id) m.movie_id, m.title, m.original_language, " +
+        String query = "SELECT ";
+
+        if (!screenings) {
+            query += "DISTINCT ON (m.movie_id) ";   // Only adding this constraint when we don't need the exact screenings (for BrowseScreen)
+        }
+
+        query += "m.movie_id, m.title, m.original_language, " +
                 "m.release_date, m.major_studio, s.screening_id, s.date_time, " +
                 "t.theater_id, t.max_occupancy, t.is_3d, t.fancy_sound, " +
                 "(t.max_occupancy - COALESCE(" +
