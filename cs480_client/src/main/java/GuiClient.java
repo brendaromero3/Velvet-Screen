@@ -39,6 +39,7 @@ public class GuiClient extends Application {
 
     Connection conn;
     int user_id, membership_id;
+    boolean admin;
 
     // Navigation runnables accessible across the app
     public Runnable goToLanding;
@@ -84,6 +85,9 @@ public class GuiClient extends Application {
         Runnable[] goToAdminTheatersArr   = new Runnable[1];
 
         goToLandingArr[0] = () -> {
+            user_id = -1;
+            membership_id = -1;
+            admin = false;
             primaryStage.setScene(new LandingScreen(primaryStage, goToLoginArr[0], goToRegisterArr[0]).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
@@ -94,7 +98,7 @@ public class GuiClient extends Application {
         };
 
         goToRegisterArr[0] = () -> {
-            primaryStage.setScene(new RegisterScreen(primaryStage, this, goToLandingArr[0], goToLoginArr[0]).getScene());
+            primaryStage.setScene(new RegisterScreen(primaryStage, this, goToLandingArr[0], goToLoginArr[0], goToAdminDashboardArr[0]).getScene(admin));
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
@@ -147,7 +151,8 @@ public class GuiClient extends Application {
                 goToAdminAnalyticsArr[0],
                 goToAdminMoviesArr[0],
                 goToAdminPeopleArr[0],
-                goToAdminTheatersArr[0]
+                goToAdminTheatersArr[0],
+                goToRegisterArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
@@ -230,6 +235,8 @@ public class GuiClient extends Application {
         goToAdminMovies     = goToAdminMoviesArr[0];
         goToAdminPeople     = goToAdminPeopleArr[0];
         goToAdminTheaters   = goToAdminTheatersArr[0];
+
+        admin = false;
 
         primaryStage.setTitle("Velvet Screen");
         primaryStage.setScene(new LandingScreen(primaryStage, goToLogin, goToRegister).getScene());
@@ -316,6 +323,7 @@ public class GuiClient extends Application {
             if (rs.next()) {
                 user_id = rs.getInt("user_id");
                 if (isAdmin(user_id)) {
+                    admin = true;
                     Platform.runLater(() -> {
                         stage.setScene(new AdminDashboard(
                             stage, this,
@@ -324,11 +332,13 @@ public class GuiClient extends Application {
                             goToAdminAnalytics,
                             goToAdminMovies,
                             goToAdminPeople,
-                            goToAdminTheaters
+                            goToAdminTheaters,
+                            goToRegister
                         ).getScene());
                         stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                     });
                 } else {
+                    admin = false;
                     getMembershipId(user_id);
                     Platform.runLater(() -> {
                         ClientDashboard dashboard = new ClientDashboard(

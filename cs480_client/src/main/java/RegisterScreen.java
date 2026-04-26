@@ -11,15 +11,17 @@ public class RegisterScreen {
     private GuiClient app;
     private Runnable onBack;
     private Runnable onLogin;
+    private Runnable onCreate;
 
-    public RegisterScreen(Stage stage, GuiClient app, Runnable onBack, Runnable onLogin) {
+    public RegisterScreen(Stage stage, GuiClient app, Runnable onBack, Runnable onLogin, Runnable onCreate) {
         this.stage   = stage;
         this.app     = app;
         this.onBack  = onBack;
         this.onLogin = onLogin;
+        this.onCreate = onCreate;
     }
 
-    public Scene getScene() {
+    public Scene getScene(boolean admin) {
 
         // navbar
         Label wordmark = new Label("Velvet Screen");
@@ -62,7 +64,9 @@ public class RegisterScreen {
         ToggleButton clientBtn = new ToggleButton("Client");
         ToggleButton adminBtn  = new ToggleButton("Admin");
         clientBtn.setToggleGroup(roleGroup);
-        adminBtn.setToggleGroup(roleGroup);
+        if(admin) {
+            adminBtn.setToggleGroup(roleGroup);
+        }
         clientBtn.setSelected(true);
 
         String toggleSelected =
@@ -93,7 +97,13 @@ public class RegisterScreen {
             clientBtn.setStyle(toggleUnselected);
         });
 
-        HBox roleToggle = new HBox(0, clientBtn, adminBtn);
+        HBox roleToggle;
+        if(admin) {
+            roleToggle = new HBox(0, clientBtn, adminBtn);
+        }
+        else {
+            roleToggle = new HBox(0, clientBtn);
+        }
 
         // fields
         Label nameLabel = new Label("FULL NAME");
@@ -163,7 +173,11 @@ public class RegisterScreen {
 
             boolean success = app.register(name, email, address, password, interests, isAdmin);
             if (success) {
-                if (onLogin != null) onLogin.run();
+                if(admin) {
+                    if (onCreate != null) onCreate.run();
+                } else {
+                    if (onLogin != null) onLogin.run();
+                }
             } else {
                 errorLabel.setText("Registration failed. Email may already be in use.");
             }
