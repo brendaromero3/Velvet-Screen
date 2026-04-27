@@ -92,7 +92,7 @@ public class GuiClient extends Application {
         };
 
         goToMovieDetail = (movie) -> {
-            primaryStage.setScene(new MovieDetailScreen(primaryStage, this, goToBrowseArr[0], goToLoginArr[0], goToAccountArr[0], goToPaymentsArr[0], movie).getScene());
+            primaryStage.setScene(new MovieDetailScreen(primaryStage, this, goToLandingArr[0], goToBrowseArr[0], goToLoginArr[0], goToAccountArr[0], goToPaymentsArr[0], movie).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
@@ -864,14 +864,14 @@ public class GuiClient extends Application {
         return results;
     }
 
-    public boolean book(int screening_id, int num_tickets, double price, String card_num) {
+    public Integer book(int screening_id, int num_tickets, double price, String card_num) {
         try {
             int sale_id;
             try (PreparedStatement stmt = conn.prepareStatement(
                     "SELECT COALESCE(MAX(sale_id), 0) + 1 FROM ticket_sale")) {
                 ResultSet rs = stmt.executeQuery();
                 rs.next();
-                sale_id = rs.getInt("movie_id");
+                sale_id = rs.getInt(1);
             }
 
             String query = "INSERT INTO ticket_sale (sale_id, user_id, screening_id, " +
@@ -912,11 +912,11 @@ public class GuiClient extends Application {
             }
 
             conn.commit();
-            return true;
+            return sale_id;
         } catch (Exception e) {
             System.out.println("Error: " + e);
             try { conn.rollback(); } catch (Exception ex) { System.out.println("Rollback error: " + ex); }
-            return false;
+            return null;
         }
     }
 
