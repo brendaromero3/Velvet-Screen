@@ -96,7 +96,7 @@ public class PayScreen {
 //            Integer bookingId = app.book(screeningId, numTickets, total, selectedCard);
 //
 //            if (bookingId != null) {
-//                stage.setScene(new ConfirmScreen(stage, app, onBack).getScene());
+//                stage.setScene(new ConfirmScreen(stage, app, onBack, movie, numTickets, total, bookingId).getScene());
 //            } else {
 //                System.out.println("Booking failed");
 //            }
