@@ -87,19 +87,14 @@ public class PayScreen {
                 return;
             }
 
-            // TODO CHANGE BACK TO ACTUAL UPDATES VERSION
-            int bookingId = 0; // TEMP
-            stage.setScene(new ConfirmScreen(stage, app, onBack, movie, numTickets, total, bookingId).getScene());
-            // temp comment out so i dont make a million sales while doing the screen
+            int screeningId = Integer.parseInt(movie[5]);
+            Integer bookingId = app.book(screeningId, numTickets, total, selectedCard);
 
-//            int screeningId = Integer.parseInt(movie[5]);
-//            Integer bookingId = app.book(screeningId, numTickets, total, selectedCard);
-//
-//            if (bookingId != null) {
-//                stage.setScene(new ConfirmScreen(stage, app, onBack, movie, numTickets, total, bookingId).getScene());
-//            } else {
-//                System.out.println("Booking failed");
-//            }
+            if (bookingId != null) {
+                stage.setScene(new ConfirmScreen(stage, app, onBack, movie, numTickets, total, bookingId).getScene());
+            } else {
+                System.out.println("Booking failed");
+            }
         });
 
         // Cards list
@@ -148,16 +143,6 @@ public class PayScreen {
 
         loadCardsRef[0].run();
 
-//        Label movieName = new Label(movie[1]);
-//        movieName.setStyle(
-//                "-fx-font-family: 'Noto Serif Display';" +
-//                        "-fx-font-size: 32px;" +
-//                        "-fx-text-fill: " + LandingScreen.TEXT_DARK + ";"
-//        );
-
-//        HBox details = getDetails();
-
-//        VBox cardsBox = new VBox(8);
         List<String[]> cards = app.getPaymentMethods();
 
         Button addBtn = new Button("+ Add Payment Method");
