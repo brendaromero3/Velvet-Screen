@@ -207,19 +207,20 @@ public class BookingScreen {
 
         VBox surcharge = new VBox(6);
 
+        int runningTotal = 0;
+
         // loops through map and lists all surcharges and discounts
         for (Map.Entry<String, Integer> entry : surcharges.entrySet()) {
             String charge = entry.getKey();
             int price = entry.getValue();
 
-            double cost = price * numTickets;
-            ticketTotal += cost;
+            runningTotal += price;
 
             HBox row = new HBox(10);
             Label chargeName = new Label(charge);
             chargeName.setStyle(bodyTextStyle(20));
 
-            Label chargeCost = new Label("$" + cost);
+            Label chargeCost = new Label("$" + (price * numTickets));
             chargeCost.setStyle(bodyTextStyle(20));
 
             Region spacer = new Region();
@@ -229,7 +230,6 @@ public class BookingScreen {
             row.setPadding(new Insets(0, 0, 0, 20));
             surcharge.getChildren().add(row);
         }
-
         Separator bottomLine = new Separator();
 
         HBox totalCost = new HBox(10);
@@ -237,7 +237,8 @@ public class BookingScreen {
         Label totalLabel = new Label("Total :");
         totalLabel.setStyle(bodyTextStyle(24));
 
-        Label totalValue = new Label("$" + ticketTotal);
+        double cost = runningTotal * numTickets;
+        Label totalValue = new Label("$" + cost);
         totalValue.setStyle(bodyTextStyle(20));
 
         Region spacer = new Region();
