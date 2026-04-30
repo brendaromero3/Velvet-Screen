@@ -381,7 +381,7 @@ public class GuiClient extends Application {
         return false;
     }
 
-    // Register
+    // Register Logic
     public boolean register(String name, String email, String address, String password, String interests, boolean isAdmin) {
         try {
             int newUserId;
@@ -430,6 +430,9 @@ public class GuiClient extends Application {
                 }
             }
 
+            // INSERT into users first
+            // then INSERT into clients OR administrators
+            // then INSERT into membership
             conn.commit();
             return true;
 

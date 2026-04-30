@@ -63,10 +63,13 @@ public class RegisterScreen {
         ToggleGroup roleGroup = new ToggleGroup();
         ToggleButton clientBtn = new ToggleButton("Client");
         ToggleButton adminBtn  = new ToggleButton("Admin");
+        
+        // checks if addmin, then allows admin button to be pressed
         clientBtn.setToggleGroup(roleGroup);
         if(admin) {
             adminBtn.setToggleGroup(roleGroup);
         }
+
         clientBtn.setSelected(true);
 
         String toggleSelected =
@@ -88,6 +91,7 @@ public class RegisterScreen {
         clientBtn.setStyle(toggleSelected);
         adminBtn.setStyle(toggleUnselected);
 
+        // toggle logic
         clientBtn.setOnAction(e -> {
             clientBtn.setStyle(toggleSelected);
             adminBtn.setStyle(toggleUnselected);
@@ -158,6 +162,7 @@ public class RegisterScreen {
             "-fx-cursor: hand;"
         );
 
+        // register button logic
         registerBtn.setOnAction(e -> {
             String name      = nameField.getText().trim();
             String email     = emailField.getText().trim();
