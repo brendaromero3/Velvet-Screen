@@ -1,5 +1,7 @@
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -10,6 +12,9 @@ import javafx.scene.layout.GridPane;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
+import javafx.scene.layout.FlowPane;
 
 public class MovieDetailScreen {
 
@@ -20,11 +25,13 @@ public class MovieDetailScreen {
     private String[] movie;
     private Runnable onAccount;
     private Runnable onPayments;
+    private Runnable onBrowse;
 
-    public MovieDetailScreen(Stage stage, GuiClient app, Runnable onBack, Runnable onLogout, Runnable onAccount, Runnable onPayments, String[] movie) {
+    public MovieDetailScreen(Stage stage, GuiClient app, Runnable onBack, Runnable onBrowse, Runnable onLogout, Runnable onAccount, Runnable onPayments, String[] movie) {
         this.stage   = stage;
         this.app     = app;
         this.onBack  = onBack;
+        this.onBrowse = onBrowse;
         this.onLogout = onLogout;
         this.onAccount = onAccount;
         this.onPayments = onPayments;
@@ -48,7 +55,7 @@ public class MovieDetailScreen {
         Button paymentsBtn = navButton("Payment Methods");
         Button logoutBtn   = navButton("Logout");
 
-        browseBtn.setOnAction(e -> onBack.run());
+        browseBtn.setOnAction(e -> onBrowse.run());
         accountBtn.setOnAction(e -> { if (onAccount != null) onAccount.run(); });
         paymentsBtn.setOnAction(e -> { if (onPayments != null) onPayments.run(); });
         logoutBtn.setOnAction(e -> { if (onLogout != null) onLogout.run(); });
@@ -70,7 +77,7 @@ public class MovieDetailScreen {
         List<String[]> writers = app.getWriters(movie[0]);
         List<String[]> producers = app.getProducers(movie[0]);
 
-        String movieId = movie[0];
+//        String movieId = movie[0];
         Label movieName = new Label(movie[1]);
         movieName.setStyle(
                 "-fx-font-family: 'Noto Serif Display';" +
@@ -78,9 +85,9 @@ public class MovieDetailScreen {
                         "-fx-text-fill: " + LandingScreen.TEXT_DARK + ";"
         );
 
-        HBox people = getPeople(actors, directors, writers, producers);
+        FlowPane people = getPeople(actors, directors, writers, producers);
 
-        HBox details = getDetails();
+        FlowPane details = getDetails();
 
         GridPane table = screeningTable();
 
@@ -126,7 +133,7 @@ public class MovieDetailScreen {
                 "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";";
     }
 
-    private HBox getPeople(List<String[]> actors, List<String[]> directors,
+    private FlowPane getPeople(List<String[]> actors, List<String[]> directors,
                            List<String[]> writers, List<String[]> producers) {
 
         // Gets all Actors
@@ -180,10 +187,17 @@ public class MovieDetailScreen {
             p.getChildren().add(ppl);
         }
 
-        return new HBox(160, act, d, w, p);
+        FlowPane panePpl = new FlowPane();
+        panePpl.setVgap(40);
+        panePpl.setHgap(80);
+        panePpl.setPadding(new Insets(10));
+        panePpl.setPrefWrapLength(300);
+        panePpl.getChildren().addAll(act, d, w, p);
+
+        return panePpl;
     }
 
-    private HBox getDetails() {
+    private FlowPane getDetails() {
         // Movie language
         Label language = new Label("Language");
         language.setStyle(bodyTextStyle(21));
@@ -215,12 +229,19 @@ public class MovieDetailScreen {
 
         VBox r = new VBox(16, releaseDate, release);
 
-        return new HBox(200, l, s, r);
+        FlowPane paneDetails = new FlowPane();
+        paneDetails.setVgap(40);
+        paneDetails.setHgap(80);
+        paneDetails.setPadding(new Insets(10));
+        paneDetails.setPrefWrapLength(300);
+        paneDetails.getChildren().addAll( l, s, r);
+
+        return paneDetails;
     }
 
     private GridPane screeningTable() {
         GridPane table = new GridPane();
-        table.setHgap(70);
+        table.setHgap(60);
         table.setVgap(30);
         table.setPadding(new Insets(10));
 
@@ -260,17 +281,24 @@ public class MovieDetailScreen {
                 isMajor = true;
             }
 
+            Map<String, Integer> surcharges = new HashMap<>();
+            surcharges.put("Base Price", 15);
+
             // Gets the different features of the theater and adjusts the price
             String features = "";
             if (is3D && isFancy) {
                 features = "3D and Fancy Sound";
                 price += 8;
+                surcharges.put("3D", 5);
+                surcharges.put("Fancy Sound", 3);
             } else if (is3D) {
                 features = "3D";
                 price += 5;
+                surcharges.put("3D", 5);
             } else if (isFancy) {
                 features = "Fancy Sound";
                 price += 3;
+                surcharges.put("Fancy Sound", 3);
             } else {
                 features = "None";
             }
@@ -278,10 +306,11 @@ public class MovieDetailScreen {
             // checks if movie is from a major studio
             if (isMajor) {
                 price += 3;
+                surcharges.put("Major Studio", 3);
             }
 
             // checks if a discounts can be applied based on the release date and current date
-            price = discount(screen, price);
+            price = discount(screen, price, surcharges);
 
             String p = "$" + price;
 
@@ -303,9 +332,11 @@ public class MovieDetailScreen {
                             "-fx-background-radius: 4;" +
                             "-fx-cursor: hand;"
             );
-//            book.setOnAction(e -> {
-//
-//            });
+            int bookPrice = price;
+            book.setOnAction(e -> {
+                stage.setScene(new BookingScreen(stage, app, onBrowse, onBack, movie, DandT, theater, bookPrice, surcharges).getScene());
+            });
+
             table.add(book, 5, row); // adds the button the GridPane
 
             if (Integer.parseInt(screen[11]) <= 0) {
@@ -323,6 +354,10 @@ public class MovieDetailScreen {
         Label header = new Label(text);
         header.setStyle(bodyTextStyle(15));
 
+        header.setWrapText(true);
+        table.setHalignment(header, HPos.CENTER);
+        table.setValignment(header, VPos.CENTER);
+
         table.add(header, col, 0);
     }
 
@@ -330,10 +365,14 @@ public class MovieDetailScreen {
         Label content = new Label(text);
         content.setStyle(bodyTextStyle(15));
 
+        content.setWrapText(true);
+        table.setHalignment(content, HPos.CENTER);
+        table.setValignment(content, VPos.CENTER);
+
         table.add(content, col, row);
     }
 
-    private int discount(String[] screen, int price) {
+    private int discount(String[] screen, int price, Map<String, Integer> surcharges) {
         // checking for discounts based on date
 
         // From API: Obtains an instance of LocalDate from a text string
@@ -348,10 +387,16 @@ public class MovieDetailScreen {
         Boolean years = date.isBefore(minus2Years);
 
         if (years) {
-            price *= 0.6; // 60% of original price/40% off
+//            price *= 0.6; // 60% of original price/40% off
+            int disc = (int) (price * 0.4);
+            price -= disc;
+            surcharges.put("Movie over 2 years old", -disc);
         }
         else if (months) {
-            price *= 0.8; // 80% of original price/20% off
+//            price *= 0.8; // 80% of original price/20% off
+            int disc = (int) (price * 0.2);
+            price -= disc;
+            surcharges.put("Movie over 2 months old", -disc);
         }
 
         return price;
