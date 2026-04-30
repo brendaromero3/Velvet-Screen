@@ -22,9 +22,7 @@ public class PayScreen {
     private int numTickets;
     private double total;
     private String selectedCard;
-    private int userId;
     private Button currSelected;
-
 
     public PayScreen(Stage stage, GuiClient app, Runnable onBack, String[] movie, int numTickets, double total) {
         this.stage   = stage;
@@ -173,7 +171,6 @@ public class PayScreen {
         });
 
         HBox summary = orderSummary(addBtn);
-
 
         VBox resultsBox = new VBox(8);
         resultsBox.setFillWidth(true);
