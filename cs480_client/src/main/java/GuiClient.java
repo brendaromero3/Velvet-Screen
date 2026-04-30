@@ -37,7 +37,6 @@ public class GuiClient extends Application {
     ListView<String> messageLogs = new ListView<String>();
     public static String username;
 
-//    Connection conn;
     int user_id, membership_id;
 
     // Navigation runnables accessible across the app
@@ -60,8 +59,6 @@ public class GuiClient extends Application {
         Font.loadFont(getClass().getResourceAsStream("/NotoSerifDisplay-VariableFont_wdth,wght.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("/NotoSerifDisplay-Italic-VariableFont_wdth,wght.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("/Questrial-Regular.ttf"), 14);
-
-//        connect();
 
         Runnable[] goToLandingArr  = new Runnable[1];
         Runnable[] goToLoginArr    = new Runnable[1];
@@ -141,20 +138,11 @@ public class GuiClient extends Application {
         primaryStage.show();
     }
 
+    // Connecting to the database
     private Connection getConnection() throws SQLException {
-//        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
-        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "postgres", "3D33Jsski2s");
+        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
     }
 
-    // Connecting to the database
-//    private void connect() {
-//        try {
-////            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
-//            conn.setAutoCommit(false);
-//        } catch (Exception e) {
-//            System.out.println("Error: " + e);
-//        }
-//    }
 
     // Checking if a user is an admin
     private boolean isAdmin(int id) {
