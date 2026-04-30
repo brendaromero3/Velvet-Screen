@@ -37,7 +37,6 @@ public class GuiClient extends Application {
     ListView<String> messageLogs = new ListView<String>();
     public static String username;
 
-    Connection conn;
     int user_id, membership_id;
     boolean admin;
 
@@ -67,8 +66,6 @@ public class GuiClient extends Application {
         Font.loadFont(getClass().getResourceAsStream("/NotoSerifDisplay-VariableFont_wdth,wght.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("/NotoSerifDisplay-Italic-VariableFont_wdth,wght.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("/Questrial-Regular.ttf"), 14);
-
-        connect();
 
         Runnable[] goToLandingArr  = new Runnable[1];
         Runnable[] goToLoginArr    = new Runnable[1];
@@ -123,101 +120,101 @@ public class GuiClient extends Application {
 
         goToPaymentsArr[0] = () -> {
             primaryStage.setScene(new PaymentMethodsScreen(
-                primaryStage, this,
-                goToDashboardArr[0],
-                goToLandingArr[0],
-                goToBrowseArr[0],
-                goToAccountArr[0]
+                    primaryStage, this,
+                    goToDashboardArr[0],
+                    goToLandingArr[0],
+                    goToBrowseArr[0],
+                    goToAccountArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToAccountArr[0] = () -> {
             primaryStage.setScene(new ClientProfileScreen(
-                primaryStage, this,
-                goToDashboardArr[0],
-                goToLandingArr[0],
-                goToBrowseArr[0],
-                goToPaymentsArr[0]
+                    primaryStage, this,
+                    goToDashboardArr[0],
+                    goToLandingArr[0],
+                    goToBrowseArr[0],
+                    goToPaymentsArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToAdminDashboardArr[0] = () -> {
             primaryStage.setScene(new AdminDashboard(
-                primaryStage, this,
-                goToLandingArr[0],
-                goToAdminScreeningsArr[0],
-                goToAdminAnalyticsArr[0],
-                goToAdminMoviesArr[0],
-                goToAdminPeopleArr[0],
-                goToAdminTheatersArr[0],
-                goToRegisterArr[0]
+                    primaryStage, this,
+                    goToLandingArr[0],
+                    goToAdminScreeningsArr[0],
+                    goToAdminAnalyticsArr[0],
+                    goToAdminMoviesArr[0],
+                    goToAdminPeopleArr[0],
+                    goToAdminTheatersArr[0],
+                    goToRegisterArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToAdminScreeningsArr[0] = () -> {
             primaryStage.setScene(new AdminScreeningsScreen(
-                primaryStage, this,
-                goToAdminDashboardArr[0],
-                goToLandingArr[0],
-                goToAdminAnalyticsArr[0],
-                goToAdminMoviesArr[0],
-                goToAdminPeopleArr[0],
-                goToAdminTheatersArr[0]
+                    primaryStage, this,
+                    goToAdminDashboardArr[0],
+                    goToLandingArr[0],
+                    goToAdminAnalyticsArr[0],
+                    goToAdminMoviesArr[0],
+                    goToAdminPeopleArr[0],
+                    goToAdminTheatersArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToAdminAnalyticsArr[0] = () -> {
             primaryStage.setScene(new AdminAnalyticsScreen(
-                primaryStage, this,
-                goToAdminDashboardArr[0],
-                goToLandingArr[0],
-                goToAdminScreeningsArr[0],
-                goToAdminMoviesArr[0],
-                goToAdminPeopleArr[0],
-                goToAdminTheatersArr[0]
+                    primaryStage, this,
+                    goToAdminDashboardArr[0],
+                    goToLandingArr[0],
+                    goToAdminScreeningsArr[0],
+                    goToAdminMoviesArr[0],
+                    goToAdminPeopleArr[0],
+                    goToAdminTheatersArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToAdminMoviesArr[0] = () -> {
             primaryStage.setScene(new AdminMoviesScreen(
-                primaryStage, this,
-                goToAdminDashboardArr[0],
-                goToLandingArr[0],
-                goToAdminScreeningsArr[0],
-                goToAdminAnalyticsArr[0],
-                goToAdminPeopleArr[0],
-                goToAdminTheatersArr[0]
+                    primaryStage, this,
+                    goToAdminDashboardArr[0],
+                    goToLandingArr[0],
+                    goToAdminScreeningsArr[0],
+                    goToAdminAnalyticsArr[0],
+                    goToAdminPeopleArr[0],
+                    goToAdminTheatersArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToAdminPeopleArr[0] = () -> {
             primaryStage.setScene(new AdminPeopleScreen(
-                primaryStage, this,
-                goToAdminDashboardArr[0],
-                goToLandingArr[0],
-                goToAdminScreeningsArr[0],
-                goToAdminAnalyticsArr[0],
-                goToAdminMoviesArr[0],
-                goToAdminTheatersArr[0]
+                    primaryStage, this,
+                    goToAdminDashboardArr[0],
+                    goToLandingArr[0],
+                    goToAdminScreeningsArr[0],
+                    goToAdminAnalyticsArr[0],
+                    goToAdminMoviesArr[0],
+                    goToAdminTheatersArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
         goToAdminTheatersArr[0] = () -> {
             primaryStage.setScene(new AdminTheatersScreen(
-                primaryStage, this,
-                goToAdminDashboardArr[0],
-                goToLandingArr[0],
-                goToAdminScreeningsArr[0],
-                goToAdminAnalyticsArr[0],
-                goToAdminMoviesArr[0],
-                goToAdminPeopleArr[0]
+                    primaryStage, this,
+                    goToAdminDashboardArr[0],
+                    goToLandingArr[0],
+                    goToAdminScreeningsArr[0],
+                    goToAdminAnalyticsArr[0],
+                    goToAdminMoviesArr[0],
+                    goToAdminPeopleArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
@@ -245,22 +242,21 @@ public class GuiClient extends Application {
     }
 
     // Connecting to the database
-    private void connect() {
-        try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
-            conn.setAutoCommit(false);
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
     }
+
 
     // Checking if a user is an admin
     private boolean isAdmin(int id) {
         String query = "SELECT * FROM administrators WHERE user_id = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next();
+
+            try(ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
@@ -270,13 +266,16 @@ public class GuiClient extends Application {
     // Getting and setting the membership id
     private void getMembershipId(int id) {
         String query = "SELECT * FROM membership WHERE user_id = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                membership_id = rs.getInt("membership_id");
-            } else {
-                membership_id = -1;
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    membership_id = rs.getInt("membership_id");
+                } else {
+                    membership_id = -1;
+                }
             }
         } catch (Exception e) {
             System.out.println("Error: " + e);
@@ -286,11 +285,14 @@ public class GuiClient extends Application {
     // Get client name
     public String getClientName() {
         String query = "SELECT name FROM clients WHERE user_id = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, user_id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getString("name");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("name");
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting client name: " + e.getMessage());
@@ -301,11 +303,14 @@ public class GuiClient extends Application {
     // Get movies watched for rewards
     public int getMoviesWatched() {
         String query = "SELECT movies_watched FROM membership WHERE user_id = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, user_id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("movies_watched");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("movies_watched");
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting movies watched: " + e.getMessage());
@@ -316,7 +321,7 @@ public class GuiClient extends Application {
     // Login
     public boolean logIn(String email, String password, Stage stage) {
         String query = "SELECT * FROM users WHERE email_address = ? AND password = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
             stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
@@ -326,48 +331,47 @@ public class GuiClient extends Application {
                     admin = true;
                     Platform.runLater(() -> {
                         stage.setScene(new AdminDashboard(
-                            stage, this,
-                            goToLanding,
-                            goToAdminScreenings,
-                            goToAdminAnalytics,
-                            goToAdminMovies,
-                            goToAdminPeople,
-                            goToAdminTheaters,
-                            goToRegister
+                                stage, this,
+                                goToLanding,
+                                goToAdminScreenings,
+                                goToAdminAnalytics,
+                                goToAdminMovies,
+                                goToAdminPeople,
+                                goToAdminTheaters,
+                                goToRegister
                         ).getScene());
                         stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                     });
                 } else {
-                    admin = false;
                     getMembershipId(user_id);
                     Platform.runLater(() -> {
                         ClientDashboard dashboard = new ClientDashboard(
-                            stage, this, goToLanding,
-                            (searchTerm) -> {
-                                stage.setScene(new BrowseScreen(
-                                    stage, this, searchTerm,
-                                    () -> {
-                                        ClientDashboard db = new ClientDashboard(stage, this, goToLanding,
-                                            (s) -> {
-                                                stage.setScene(new BrowseScreen(stage, this, s,
-                                                    goToDashboard, goToLanding, null, goToPayments, goToMovieDetail).getScene());
+                                stage, this, goToLanding,
+                                (searchTerm) -> {
+                                    stage.setScene(new BrowseScreen(
+                                            stage, this, searchTerm,
+                                            () -> {
+                                                ClientDashboard db = new ClientDashboard(stage, this, goToLanding,
+                                                        (s) -> {
+                                                            stage.setScene(new BrowseScreen(stage, this, s,
+                                                                    goToDashboard, goToLanding, null, goToPayments, goToMovieDetail).getScene());
+                                                            stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+                                                        },
+                                                        goToAccount,
+                                                        goToPayments
+                                                );
+                                                stage.setScene(db.getScene());
                                                 stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
                                             },
+                                            goToLanding,
                                             goToAccount,
-                                            goToPayments
-                                        );
-                                        stage.setScene(db.getScene());
-                                        stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
-                                    },
-                                    goToLanding,
-                                    goToAccount,
-                                    goToPayments,
-                                    (movie) -> goToMovieDetail.accept(movie)
-                                ).getScene());
-                                stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
-                            },
-                            goToAccount,
-                            goToPayments
+                                            goToPayments,
+                                            (movie) -> goToMovieDetail.accept(movie)
+                                    ).getScene());
+                                    stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
+                                },
+                                goToAccount,
+                                goToPayments
                         );
                         stage.setScene(dashboard.getScene());
                         stage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
@@ -381,64 +385,72 @@ public class GuiClient extends Application {
         return false;
     }
 
-    // Register Logic
+    // Register
     public boolean register(String name, String email, String address, String password, String interests, boolean isAdmin) {
-        try {
-            int newUserId;
-            try (PreparedStatement stmt = conn.prepareStatement("SELECT COALESCE(MAX(user_id), 0) + 1 FROM users")) {
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                newUserId = rs.getInt(1);
-            }
+        String query = "SELECT COALESCE(MAX(user_id), 0) + 1 FROM users";
+        String query1 = "INSERT INTO users (user_id, email_address, password) VALUES (?, ?, ?)";
+        String query2 = "INSERT INTO administrators (user_id) VALUES (?)";
+        String query3 =  "INSERT INTO clients (user_id, name, address, interests) VALUES (?, ?, ?, ?)";
+        String query4 = "SELECT COALESCE(MAX(membership_id), 0) + 1 FROM membership";
+        String query5 = "INSERT INTO membership (membership_id, user_id, movies_watched, num_free_earned) VALUES (?, ?, 0, 0)";
 
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO users (user_id, email_address, password) VALUES (?, ?, ?)")) {
-                stmt.setInt(1, newUserId);
-                stmt.setString(2, email);
-                stmt.setString(3, password);
-                stmt.executeUpdate();
-            }
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
 
-            if (isAdmin) {
-                try (PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO administrators (user_id) VALUES (?)")) {
-                    stmt.setInt(1, newUserId);
-                    stmt.executeUpdate();
-                }
-            } else {
-                try (PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO clients (user_id, name, address, interests) VALUES (?, ?, ?, ?)")) {
-                    stmt.setInt(1, newUserId);
-                    stmt.setString(2, name);
-                    stmt.setString(3, address);
-                    stmt.setString(4, interests);
-                    stmt.executeUpdate();
-                }
-
-                int newMembershipId;
-                try (PreparedStatement stmt = conn.prepareStatement(
-                        "SELECT COALESCE(MAX(membership_id), 0) + 1 FROM membership")) {
+            try {
+                int newUserId;
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
                     ResultSet rs = stmt.executeQuery();
                     rs.next();
-                    newMembershipId = rs.getInt(1);
+                    newUserId = rs.getInt(1);
                 }
-                try (PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO membership (membership_id, user_id, movies_watched, num_free_earned) VALUES (?, ?, 0, 0)")) {
-                    stmt.setInt(1, newMembershipId);
-                    stmt.setInt(2, newUserId);
+                try (PreparedStatement stmt = conn.prepareStatement(query1)) {
+                    stmt.setInt(1, newUserId);
+                    stmt.setString(2, email);
+                    stmt.setString(3, password);
                     stmt.executeUpdate();
                 }
+
+                if (isAdmin) {
+                    try (PreparedStatement stmt = conn.prepareStatement(query2)) {
+                        stmt.setInt(1, newUserId);
+                        stmt.executeUpdate();
+                    }
+                } else {
+                    try (PreparedStatement stmt = conn.prepareStatement(query3)) {
+                        stmt.setInt(1, newUserId);
+                        stmt.setString(2, name);
+                        stmt.setString(3, address);
+                        stmt.setString(4, interests);
+                        stmt.executeUpdate();
+                    }
+
+                    int newMembershipId;
+                    try (PreparedStatement stmt = conn.prepareStatement(query4)) {
+                        ResultSet rs = stmt.executeQuery();
+                        rs.next();
+                        newMembershipId = rs.getInt(1);
+                    }
+                    try (PreparedStatement stmt = conn.prepareStatement(query5)) {
+                        stmt.setInt(1, newMembershipId);
+                        stmt.setInt(2, newUserId);
+                        stmt.executeUpdate();
+                    }
+                }
+
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Registration Error: " + e);
+                return false;
             }
-
-            // INSERT into users first
-            // then INSERT into clients OR administrators
-            // then INSERT into membership
-            conn.commit();
-            return true;
-
         } catch (Exception e) {
-            System.out.println("Registration error: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) { }
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
@@ -490,26 +502,26 @@ public class GuiClient extends Application {
 
         query += " ORDER BY m.movie_id, s.date_time;";
 
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             for (int i = 0; i < params.size(); i++) {
                 stmt.setString(i + 1, params.get(i));
             }
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 results.add(new String[]{
-                    rs.getString("movie_id"),
-                    rs.getString("title"),
-                    rs.getString("original_language"),
-                    rs.getString("release_date"),
-                    rs.getString("major_studio"),
-                    rs.getString("screening_id"),
-                    rs.getString("date_time"),
-                    rs.getString("theater_id"),
-                    rs.getString("max_occupancy"),
-                    rs.getString("is_3d"),
-                    rs.getString("fancy_sound"),
-                    rs.getString("seats_available"),
-                    rs.getString("length")
+                        rs.getString("movie_id"),
+                        rs.getString("title"),
+                        rs.getString("original_language"),
+                        rs.getString("release_date"),
+                        rs.getString("major_studio"),
+                        rs.getString("screening_id"),
+                        rs.getString("date_time"),
+                        rs.getString("theater_id"),
+                        rs.getString("max_occupancy"),
+                        rs.getString("is_3d"),
+                        rs.getString("fancy_sound"),
+                        rs.getString("seats_available"),
+                        rs.getString("length")
                 });
             }
         } catch (Exception e) {
@@ -526,14 +538,17 @@ public class GuiClient extends Application {
                 "FROM actors a " +
                 "JOIN persons p on a.person_id = p.person_id " +
                 "WHERE a.movie_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, Integer.parseInt(movieId));
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                results.add(new String[]{
-                    rs.getString("name"),
-                    rs.getString("character_name")
-                });
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(new String[]{
+                            rs.getString("name"),
+                            rs.getString("character_name")
+                    });
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting actors: " + e.getMessage());
@@ -548,11 +563,14 @@ public class GuiClient extends Application {
                 "FROM directors d " +
                 "JOIN persons p on d.person_id = p.person_id " +
                 "WHERE d.movie_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, Integer.parseInt(movieId));
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                results.add(new String[]{ rs.getString("name") });
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(new String[]{ rs.getString("name") });
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting directors: " + e.getMessage());
@@ -567,11 +585,14 @@ public class GuiClient extends Application {
                 "FROM writers w " +
                 "JOIN persons p on w.person_id = p.person_id " +
                 "WHERE w.movie_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, Integer.parseInt(movieId));
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                results.add(new String[]{ rs.getString("name") });
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(new String[]{ rs.getString("name") });
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting writers: " + e.getMessage());
@@ -586,11 +607,13 @@ public class GuiClient extends Application {
                 "FROM producers pr " +
                 "JOIN persons p on pr.person_id = p.person_id " +
                 "WHERE pr.movie_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, Integer.parseInt(movieId));
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                results.add(new String[]{ rs.getString("name") });
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(new String[]{ rs.getString("name") });
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting producers: " + e.getMessage());
@@ -600,77 +623,119 @@ public class GuiClient extends Application {
 
     // Add payment method
     public boolean addPaymentMethod(String card_num, String billing_addr) {
-        try {
-            String query = "INSERT INTO card_info VALUES (?,?);";
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, card_num);
-                stmt.setInt(2, user_id);
-                stmt.executeUpdate();
-            }
-            if (billing_addr != null && !billing_addr.isBlank()) {
-                String query2 = "INSERT INTO credit VALUES (?,?);";
-                try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
-                    stmt2.setString(1, card_num);
-                    stmt2.setString(2, billing_addr);
-                    stmt2.executeUpdate();
+        String query = "INSERT INTO card_info VALUES (?,?);";
+        String query2 = "INSERT INTO credit VALUES (?,?);";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setString(1, card_num);
+                    stmt.setInt(2, user_id);
+                    stmt.executeUpdate();
+                }
+
+                if (billing_addr != null && !billing_addr.isBlank()) {
+                    try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
+                        stmt2.setString(1, card_num);
+                        stmt2.setString(2, billing_addr);
+                        stmt2.executeUpdate();
+                    }
+                }
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                    return false;
                 }
             }
-            conn.commit();
-            return true;
         } catch (Exception e) {
             System.out.println("Error: " + e);
-            try { conn.rollback(); } catch (Exception ex) { System.out.println("Rollback error: " + ex); }
-            return false;
         }
+        return false;
     }
 
     // Delete payment method
     public boolean deletePaymentMethods(String card_num, String billing_addr) {
-        try {
-            if (billing_addr != null && !billing_addr.isBlank()) {
-                String query2 = "DELETE FROM credit WHERE card_number = ? AND billing_address = ?;";
-                try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
-                    stmt2.setString(1, card_num);
-                    stmt2.setString(2, billing_addr);
-                    stmt2.executeUpdate();
+        String query2 = "DELETE FROM credit WHERE card_number = ? AND billing_address = ?;";
+        String query = "DELETE FROM card_info WHERE card_number = ? AND user_id = ?;";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                if (billing_addr != null && !billing_addr.isBlank()) {
+                    try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
+                        stmt2.setString(1, card_num);
+                        stmt2.setString(2, billing_addr);
+                        stmt2.executeUpdate();
+                    }
                 }
+
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setString(1, card_num);
+                    stmt.setInt(2, user_id);
+                    stmt.executeUpdate();
+                }
+                conn.commit();
+                return true;
+
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Error: " + e);
+                return false;
             }
-            String query = "DELETE FROM card_info WHERE card_number = ? AND user_id = ?;";
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, card_num);
-                stmt.setInt(2, user_id);
-                stmt.executeUpdate();
-            }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
 
     // Update payment method
     public boolean updatePaymentMethods(String card_num, String billing_addr, String old_billing_addr) {
-        try {
-            String query = "UPDATE card_info SET card_number = ? WHERE user_id = ? AND card_number = ?;";
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, card_num);
-                stmt.setInt(2, user_id);
-                stmt.setString(3, old_billing_addr);
-                stmt.executeUpdate();
-            }
-            if (billing_addr != null && !billing_addr.isBlank()) {
-                String query2 = "UPDATE credit SET billing_address = ? WHERE card_number = ?;";
-                try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
-                    stmt2.setString(1, billing_addr);
-                    stmt2.setString(2, card_num);
-                    stmt2.executeUpdate();
+        String query = "UPDATE card_info SET card_number = ? WHERE user_id = ? AND card_number = ?;";
+        String query2 = "UPDATE credit SET billing_address = ? WHERE card_number = ?;";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setString(1, card_num);
+                    stmt.setInt(2, user_id);
+                    stmt.setString(3, old_billing_addr);
+                    stmt.executeUpdate();
                 }
+
+                if (billing_addr != null && !billing_addr.isBlank()) {
+                    try (PreparedStatement stmt2 = conn.prepareStatement(query2)) {
+                        stmt2.setString(1, billing_addr);
+                        stmt2.setString(2, card_num);
+                        stmt2.executeUpdate();
+                    }
+                }
+                conn.commit();
+                return true;
+
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Error: " + e);
+                return false;
             }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
@@ -678,78 +743,106 @@ public class GuiClient extends Application {
     // Schedule a movie screening
     public boolean schedule(String movieName, int theater_id, String date, String time) {
         int movie_id;
-        try {
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT movie_id FROM movies WHERE title = ?")) {
-                stmt.setString(1, movieName);
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                movie_id = rs.getInt("movie_id");
+        int newScreeningId;
+        String query = "SELECT movie_id FROM movies WHERE title = ?";
+        String query2 = "SELECT COALESCE(MAX(screening_id), 0) + 1 FROM screening";
+        String query3 = "INSERT INTO screening (screening_id, movie_id, theater_id, date_time) VALUES (?, ?, ?, ?::TIMESTAMP)";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setString(1, movieName);
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    movie_id = rs.getInt("movie_id");
+                }
+                try (PreparedStatement stmt = conn.prepareStatement(query2)) {
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    newScreeningId = rs.getInt(1);
+                }
+                try (PreparedStatement stmt = conn.prepareStatement(query3)) {
+                    stmt.setInt(1, newScreeningId);
+                    stmt.setInt(2, movie_id);
+                    stmt.setInt(3, theater_id);
+                    stmt.setString(4, (date + time));
+                    stmt.executeUpdate();
+                }
+                conn.commit();
+                return true;
+
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Error: " + e);
+                return false;
             }
-            int newScreeningId;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT COALESCE(MAX(screening_id), 0) + 1 FROM screening")) {
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                newScreeningId = rs.getInt(1);
-            }
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO screening (screening_id, movie_id, theater_id, date_time) VALUES (?, ?, ?, ?::TIMESTAMP)")) {
-                stmt.setInt(1, newScreeningId);
-                stmt.setInt(2, movie_id);
-                stmt.setInt(3, theater_id);
-                stmt.setString(4, (date + time));
-                stmt.executeUpdate();
-            }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
 
     // Monitor movie screenings — returns remaining seat capacity
     public int monitor(String movieName, String date_time) {
-        try {
-            int movie_id;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT movie_id FROM movies WHERE title = ?")) {
-                stmt.setString(1, movieName);
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                movie_id = rs.getInt("movie_id");
+        String query = "SELECT movie_id FROM movies WHERE title = ?";
+        String query2 = "SELECT screening_id, theater_id FROM screening WHERE movie_id = ? AND date_time = ?::TIMESTAMP";
+        String query3 = "SELECT max_occupancy FROM theater WHERE theater_id = ?";
+        String query4 = "SELECT SUM(num_tickets) FROM ticket_sale WHERE screening_id = ?";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                int movie_id, screening_id, theater_id, max_capacity, sold;
+
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setString(1, movieName);
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    movie_id = rs.getInt("movie_id");
+                }
+
+                try (PreparedStatement stmt = conn.prepareStatement(query2)) {
+                    stmt.setInt(1, movie_id);
+                    stmt.setString(2, date_time); // fixed bug: was setString(1)
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    screening_id = rs.getInt("screening_id");
+                    theater_id   = rs.getInt("theater_id");
+                }
+
+                try (PreparedStatement stmt = conn.prepareStatement(query3)) {
+                    stmt.setInt(1, theater_id);
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    max_capacity = rs.getInt("max_occupancy");
+                }
+
+                try (PreparedStatement stmt = conn.prepareStatement(query4)) {
+                    stmt.setInt(1, screening_id);
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    sold = rs.getInt(1);
+                }
+                conn.commit();
+                return max_capacity - sold;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Error: " + e);
+                return -1;
             }
-            int screening_id;
-            int theater_id;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT screening_id, theater_id FROM screening WHERE movie_id = ? AND date_time = ?::TIMESTAMP")) {
-                stmt.setInt(1, movie_id);
-                stmt.setString(2, date_time); // fixed bug: was setString(1)
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                screening_id = rs.getInt("screening_id");
-                theater_id   = rs.getInt("theater_id");
-            }
-            int max_capacity;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT max_occupancy FROM theater WHERE theater_id = ?")) {
-                stmt.setInt(1, theater_id);
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                max_capacity = rs.getInt("max_occupancy");
-            }
-            int sold;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT SUM(num_tickets) FROM ticket_sale WHERE screening_id = ?")) {
-                stmt.setInt(1, screening_id);
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                sold = rs.getInt(1);
-            }
-            return max_capacity - sold;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("Connection Error: " + e);
             return -1;
         }
     }
@@ -763,15 +856,18 @@ public class GuiClient extends Application {
                 "FROM card_info ci " +
                 "LEFT JOIN credit cr ON ci.card_number = cr.card_number " +
                 "WHERE ci.user_id = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, user_id);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                results.add(new String[]{
-                    rs.getString("card_number"),
-                    rs.getString("card_type"),
-                    rs.getString("billing_address")
-                });
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(new String[]{
+                            rs.getString("card_number"),
+                            rs.getString("card_type"),
+                            rs.getString("billing_address")
+                    });
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting payment methods: " + e.getMessage());
@@ -782,18 +878,21 @@ public class GuiClient extends Application {
     // Get client info for profile screen
     public String[] getClientInfo() {
         String query = "SELECT c.name, u.email_address, c.address, c.interests " +
-                    "FROM clients c JOIN users u ON c.user_id = u.user_id " +
-                    "WHERE c.user_id = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                "FROM clients c JOIN users u ON c.user_id = u.user_id " +
+                "WHERE c.user_id = ?;";
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, user_id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new String[]{
-                    rs.getString("name"),
-                    rs.getString("email_address"),
-                    rs.getString("address"),
-                    rs.getString("interests")
-                };
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{
+                            rs.getString("name"),
+                            rs.getString("email_address"),
+                            rs.getString("address"),
+                            rs.getString("interests")
+                    };
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting client info: " + e.getMessage());
@@ -803,52 +902,72 @@ public class GuiClient extends Application {
 
     // Update client info
     public boolean updateClientInfo(String name, String email, String address, String interests) {
-        try {
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE clients SET name = ?, address = ?, interests = ? WHERE user_id = ?")) {
-                stmt.setString(1, name);
-                stmt.setString(2, address);
-                stmt.setString(3, interests);
-                stmt.setInt(4, user_id);
-                stmt.executeUpdate();
+        String query = "UPDATE clients SET name = ?, address = ?, interests = ? WHERE user_id = ?";
+        String query2 =  "UPDATE users SET email_address = ? WHERE user_id = ?";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setString(1, name);
+                    stmt.setString(2, address);
+                    stmt.setString(3, interests);
+                    stmt.setInt(4, user_id);
+                    stmt.executeUpdate();
+                }
+                try (PreparedStatement stmt = conn.prepareStatement(query2)) {
+                    stmt.setString(1, email);
+                    stmt.setInt(2, user_id);
+                    stmt.executeUpdate();
+                }
+
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Error: " + e);
+                return false;
             }
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE users SET email_address = ? WHERE user_id = ?")) {
-                stmt.setString(1, email);
-                stmt.setInt(2, user_id);
-                stmt.executeUpdate();
-            }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error updating client info: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
 
     // Change password
     public boolean changePassword(String currentPass, String newPass) {
-        String query = "SELECT * FROM users WHERE user_id = ? AND password = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, user_id);
-            stmt.setString(2, currentPass);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                try (PreparedStatement stmt2 = conn.prepareStatement(
-                        "UPDATE users SET password = ? WHERE user_id = ?")) {
-                    stmt2.setString(1, newPass);
-                    stmt2.setInt(2, user_id);
-                    stmt2.executeUpdate();
+        String query = "UPDATE users SET password = ? WHERE user_id = ? AND password = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            conn.setAutoCommit(false);
+
+            stmt.setString(1, newPass);
+            stmt.setInt(2, user_id);
+            stmt.setString(3, currentPass);
+
+            int update = stmt.executeUpdate();
+
+            if (update == 0) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
                 }
-                conn.commit();
-                return true;
+                return false;
             }
+
+            conn.commit();
+            return true;
+
         } catch (Exception e) {
             System.out.println("Error changing password: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
+            return false;
         }
-        return false;
     }
 
     // Admin stats functions
@@ -869,31 +988,31 @@ public class GuiClient extends Application {
         // percentage of seats sold per screening - seatsSold/capacity
 
         String query = "SELECT t.theater_id, s.screening_id, m.title, " +
-        "COALESCE(SUM(ts.total_price), 0.00), COALESCE(SUM(ts.num_tickets), 0), " +
-        "t.max_occupancy FROM theater t " +
-        "JOIN screening s ON t.theater_id = s.theater_id " +
-        "JOIN movies m ON s.movie_id = m.movie_id " +
-        "LEFT JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
-        "GROUP BY t.theater_id, s.screening_id, m.title, t.max_occupancy " +
-        "ORDER BY t.theater_id;";
+                "COALESCE(SUM(ts.total_price), 0.00), COALESCE(SUM(ts.num_tickets), 0), " +
+                "t.max_occupancy FROM theater t " +
+                "JOIN screening s ON t.theater_id = s.theater_id " +
+                "JOIN movies m ON s.movie_id = m.movie_id " +
+                "LEFT JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
+                "GROUP BY t.theater_id, s.screening_id, m.title, t.max_occupancy " +
+                "ORDER BY t.theater_id;";
 
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                ScreeningStat stat = new ScreeningStat();
-                stat.theater_id = rs.getInt(1);
-                stat.screening_id = rs.getInt(2);
-                stat.movie_name = rs.getString(3);
-                stat.revenue = rs.getDouble(4);
-                stat.seatsSold = rs.getInt(5);
-                stat.capacity = rs.getInt(6);
-                results.add(stat);
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ScreeningStat stat = new ScreeningStat();
+                    stat.theater_id = rs.getInt(1);
+                    stat.screening_id = rs.getInt(2);
+                    stat.movie_name = rs.getString(3);
+                    stat.revenue = rs.getDouble(4);
+                    stat.seatsSold = rs.getInt(5);
+                    stat.capacity = rs.getInt(6);
+                    results.add(stat);
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting screening stats: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
         }
-
         return results;
     }
 
@@ -912,28 +1031,29 @@ public class GuiClient extends Application {
         // total tickets sold per movie - stat.seatsSold
 
         String query = "SELECT m.title, t.theater_id, COALESCE(SUM(ts.total_price), 0.00), " +
-                "COALESCE(SUM(ts.num_tickets), 0) FROM theater t " +
+                "COALESCE(SUM(ts.num_tickets), 0) FROM administrator_manages am " +
+                "JOIN theater t ON am.theater_id = t.theater_id " +
                 "JOIN screening s ON t.theater_id = s.theater_id " +
                 "JOIN movies m ON s.movie_id = m.movie_id " +
-                "LEFT JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
-                "GROUP BY m.movie_id, m.title, t.theater_id " +
+                "JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
+                "GROUP BY m.movie_id, t.theater_id " +
                 "ORDER BY m.movie_id;";
 
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                MovieStat stat = new MovieStat();
-                stat.movie_name = rs.getString(1);
-                stat.theater_id = rs.getInt(2);
-                stat.revenue = rs.getDouble(3);
-                stat.seatsSold = rs.getInt(4);
-                results.add(stat);
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    MovieStat stat = new MovieStat();
+                    stat.movie_name = rs.getString(1);
+                    stat.theater_id = rs.getInt(2);
+                    stat.revenue = rs.getDouble(3);
+                    stat.seatsSold = rs.getInt(4);
+                    results.add(stat);
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting movie stats: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
         }
-
         return results;
     }
 
@@ -956,117 +1076,152 @@ public class GuiClient extends Application {
         String query = "SELECT t.theater_id, COALESCE(SUM(ts.total_price), 0.00), " +
                 "COALESCE(SUM(ts.num_tickets), 0), AVG(ts.num_tickets::FLOAT), " +
                 "MIN(ts.num_tickets), MAX(ts.num_tickets) " +
-                "FROM theater t " +
+                "FROM administrator_manages am " +
+                "JOIN theater t ON am.theater_id = t.theater_id " +
                 "JOIN screening s ON t.theater_id = s.theater_id " +
-                "LEFT JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
+                "JOIN movies m ON s.movie_id = m.movie_id " +
+                "JOIN ticket_sale ts ON s.screening_id = ts.screening_id " +
                 "GROUP BY t.theater_id " +
                 "ORDER BY t.theater_id;";
 
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                TheaterStat stat = new TheaterStat();
-                stat.theater_id = rs.getInt(1);
-                stat.revenue = rs.getDouble(2);
-                stat.ticketsSold = rs.getInt(3);
-                stat.avgOccupancy = rs.getDouble(4);
-                stat.minOccupancy = rs.getInt(5);
-                stat.maxOccupancy = rs.getInt(6);
-                results.add(stat);
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    TheaterStat stat = new TheaterStat();
+                    stat.theater_id = rs.getInt(1);
+                    stat.revenue = rs.getDouble(2);
+                    stat.ticketsSold = rs.getInt(3);
+                    stat.avgOccupancy = rs.getDouble(4);
+                    stat.minOccupancy = rs.getInt(5);
+                    stat.maxOccupancy = rs.getInt(6);
+                    results.add(stat);
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting theater stats: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
         }
-
         return results;
     }
 
     public Integer book(int screening_id, int num_tickets, double price, String card_num) {
-        try {
-            int sale_id;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT COALESCE(MAX(sale_id), 0) + 1 FROM ticket_sale")) {
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                sale_id = rs.getInt(1);
-            }
+        String query = "INSERT INTO ticket_sale (sale_id, user_id, screening_id, " +
+                "num_tickets, purchase_date, total_price, card_number) VALUES " +
+                "(?,?,?,?,CURRENT_TIMESTAMP,?,?);";
+        String query1 = "SELECT COALESCE(MAX(sale_id), 0) + 1 FROM ticket_sale";
+        String query2 = "UPDATE membership SET movies_watched = movies_watched + 1 WHERE membership_id = ?;";
+        String query3 = "SELECT movies_watched FROM membership WHERE membership_id = ? FOR UPDATE;";
+        String query4 = "UPDATE membership SET num_free_earned = num_free_earned + 1 WHERE membership_id = ?;";
 
-            String query = "INSERT INTO ticket_sale (sale_id, user_id, screening_id, " +
-                    "num_tickets, purchase_date, total_price, card_number) VALUES " +
-                    "(?,?,?,?,CURRENT_TIMESTAMP,?,?);";
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
 
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, sale_id);
-                stmt.setInt(2, user_id);
-                stmt.setInt(3, screening_id);
-                stmt.setInt(4, num_tickets);
-                stmt.setDouble(5, price);
-                stmt.setString(6, card_num);
-                stmt.executeUpdate();
-            }
+            try {
+                int sale_id;
+                try (PreparedStatement stmt = conn.prepareStatement(query1)) {
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    sale_id = rs.getInt(1);
+                }
 
-            String query2 = "UPDATE membership SET movies_watched = movies_watched + 1 WHERE membership_id = ?;";
-            try (PreparedStatement stmt = conn.prepareStatement(query2)) {
-                stmt.setInt(1, membership_id);
-                stmt.executeUpdate();
-            }
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setInt(1, sale_id);
+                    stmt.setInt(2, user_id);
+                    stmt.setInt(3, screening_id);
+                    stmt.setInt(4, num_tickets);
+                    stmt.setDouble(5, price);
+                    stmt.setString(6, card_num);
+                    stmt.executeUpdate();
+                }
 
-            int num_watched;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT movies_watched FROM membership WHERE membership_id = ?;")) {
-                stmt.setInt(1, membership_id);
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                num_watched = rs.getInt("movies_watched");
-            }
-
-            if (num_watched % 10 == 0) {
-                String query3 = "UPDATE membership SET num_free_earned = num_free_earned + 1 WHERE membership_id = ?;";
-                try (PreparedStatement stmt = conn.prepareStatement(query3)) {
+                try (PreparedStatement stmt = conn.prepareStatement(query2)) {
                     stmt.setInt(1, membership_id);
                     stmt.executeUpdate();
                 }
-            }
 
-            conn.commit();
-            return sale_id;
+                int num_watched;
+                try (PreparedStatement stmt = conn.prepareStatement(query3)) {
+                    stmt.setInt(1, membership_id);
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    num_watched = rs.getInt("movies_watched");
+                }
+
+                if (num_watched % 10 == 0) {
+                    try (PreparedStatement stmt = conn.prepareStatement(query4)) {
+                        stmt.setInt(1, membership_id);
+                        stmt.executeUpdate();
+                    }
+                }
+
+                conn.commit();
+                return sale_id;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                return null;
+            }
         } catch (Exception e) {
-            System.out.println("Error: " + e);
-            try { conn.rollback(); } catch (Exception ex) { System.out.println("Rollback error: " + ex); }
+            System.out.println("Connection Error: " + e.getMessage());
             return null;
         }
     }
 
     public int freeTickets(int num_tickets) {
-        try{
-            int num_free;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT num_free_earned FROM membership WHERE membership_id = ?;")) {
-                stmt.setInt(1, membership_id);
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                num_free = rs.getInt("movies_watched");
-            }
+        String query = "SELECT num_free_earned FROM membership WHERE membership_id = ? FOR UPDATE;";
+        String query1 = "UPDATE membership SET num_free_earned = num_free_earned - ? WHERE membership_id = ?;";
 
-            if (num_free == 0) {
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                int curr;
+
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setInt(1, membership_id);
+                    ResultSet rs = stmt.executeQuery();
+
+                    if (!rs.next()) {
+                        try {
+                            conn.rollback();
+                        } catch (Exception e) {
+                            System.out.println("Rollback error: " + e);
+                        }
+                        return 0;
+                    }
+
+                    curr = rs.getInt("num_free_earned");
+                }
+
+                if (curr < num_tickets) {
+                    try { conn.rollback(); } catch (Exception e) {
+                        System.out.println("Rollback error: " + e);
+                    }
+                    return 0;
+                }
+
+                try (PreparedStatement stmt = conn.prepareStatement(query1)) {
+                    stmt.setInt(1, num_tickets);
+                    stmt.setInt(2, membership_id);
+                    stmt.executeUpdate();
+                }
+
+                conn.commit();
+                return num_tickets;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
                 return 0;
-            } else if (num_free > num_tickets) {
-                num_free = num_tickets;
             }
 
-            String query = "UPDATE membership SET num_free_earned = num_free_earned - ? WHERE membership_id = ?;";
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, num_free);
-                stmt.setInt(2, membership_id);
-                stmt.executeUpdate();
-            }
-
-            conn.commit();
-            return num_free;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
-            try { conn.rollback(); } catch (Exception ex) { System.out.println("Rollback error: " + ex); }
+            System.out.println("Connection Error: " + e);
             return 0;
         }
     }
@@ -1075,77 +1230,102 @@ public class GuiClient extends Application {
     public List<String[]> getAllMovies() {
         List<String[]> results = new ArrayList<>();
         String query = "SELECT m.movie_id, m.title, m.original_language, m.release_date, " +
-                    "m.length, m.major_studio, " +
-                    "STRING_AGG(DISTINCT p.name, ', ') AS directors " +
-                    "FROM movies m " +
-                    "LEFT JOIN directors d ON m.movie_id = d.movie_id " +
-                    "LEFT JOIN persons p ON d.person_id = p.person_id " +
-                    "GROUP BY m.movie_id, m.title, m.original_language, m.release_date, " +
-                    "m.length, m.major_studio " +
-                    "ORDER BY m.title;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                results.add(new String[]{
-                    rs.getString("movie_id"),
-                    rs.getString("title"),
-                    rs.getString("original_language"),
-                    rs.getString("release_date"),
-                    rs.getString("length"),
-                    rs.getString("major_studio"),
-                    rs.getString("directors")
-                });
+                "m.length, m.major_studio, " +
+                "STRING_AGG(DISTINCT p.name, ', ') AS directors " +
+                "FROM movies m " +
+                "LEFT JOIN directors d ON m.movie_id = d.movie_id " +
+                "LEFT JOIN persons p ON d.person_id = p.person_id " +
+                "GROUP BY m.movie_id, m.title, m.original_language, m.release_date, " +
+                "m.length, m.major_studio " +
+                "ORDER BY m.title;";
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(new String[]{
+                            rs.getString("movie_id"),
+                            rs.getString("title"),
+                            rs.getString("original_language"),
+                            rs.getString("release_date"),
+                            rs.getString("length"),
+                            rs.getString("major_studio"),
+                            rs.getString("directors")
+                    });
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting all movies: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
         }
         return results;
     }
 
     // Add a new movie
     public boolean addMovie(String title, String language, String releaseDate, int length, boolean majorStudio) {
-        try {
-            int newMovieId;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT COALESCE(MAX(movie_id), 0) + 1 FROM movies")) {
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                newMovieId = rs.getInt(1);
+        String query =  "SELECT COALESCE(MAX(movie_id), 0) + 1 FROM movies";
+        String query1 = "INSERT INTO movies (movie_id, title, major_studio, original_language, release_date, length) " +
+                "VALUES (?, ?, ?, ?, ?::DATE, ?)";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                int newMovieId;
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    newMovieId = rs.getInt(1);
+                }
+
+                try (PreparedStatement stmt = conn.prepareStatement(query1)) {
+                    stmt.setInt(1, newMovieId);
+                    stmt.setString(2, title);
+                    stmt.setBoolean(3, majorStudio);
+                    stmt.setString(4, language);
+                    stmt.setString(5, releaseDate);
+                    stmt.setInt(6, length);
+                    stmt.executeUpdate();
+                }
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                return false;
             }
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO movies (movie_id, title, major_studio, original_language, release_date, length) " +
-                    "VALUES (?, ?, ?, ?, ?::DATE, ?)")) {
-                stmt.setInt(1, newMovieId);
-                stmt.setString(2, title);
-                stmt.setBoolean(3, majorStudio);
-                stmt.setString(4, language);
-                stmt.setString(5, releaseDate);
-                stmt.setInt(6, length);
-                stmt.executeUpdate();
-            }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error adding movie: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
 
     // Delete a movie
     public boolean deleteMovie(int movieId) {
-        try {
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "DELETE FROM movies WHERE movie_id = ?")) {
-                stmt.setInt(1, movieId);
-                stmt.executeUpdate();
+        String query = "DELETE FROM movies WHERE movie_id = ?";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                try (PreparedStatement stmt = conn.prepareStatement(
+                        query)) {
+                    stmt.setInt(1, movieId);
+                    stmt.executeUpdate();
+                }
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                return false;
             }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error deleting movie: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
@@ -1154,69 +1334,98 @@ public class GuiClient extends Application {
     public List<String[]> getAllPeople() {
         List<String[]> results = new ArrayList<>();
         String query = "SELECT p.person_id, p.name, p.birthdate, p.biography, " +
-                    "COUNT(DISTINCT aw.award_id) AS award_count " +
-                    "FROM persons p " +
-                    "LEFT JOIN awarded aw ON p.person_id = aw.person_id " +
-                    "GROUP BY p.person_id, p.name, p.birthdate, p.biography " +
-                    "ORDER BY p.name;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                results.add(new String[]{
-                    rs.getString("person_id"),
-                    rs.getString("name"),
-                    rs.getString("birthdate"),
-                    rs.getString("biography"),
-                    rs.getString("award_count")
-                });
+                "COUNT(DISTINCT aw.award_id) AS award_count " +
+                "FROM persons p " +
+                "LEFT JOIN awarded aw ON p.person_id = aw.person_id " +
+                "GROUP BY p.person_id, p.name, p.birthdate, p.biography " +
+                "ORDER BY p.name;";
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            try(ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(new String[]{
+                            rs.getString("person_id"),
+                            rs.getString("name"),
+                            rs.getString("birthdate"),
+                            rs.getString("biography"),
+                            rs.getString("award_count")
+                    });
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting all people: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
         }
         return results;
     }
 
     // Add a new person
     public boolean addPerson(String name, String birthdate, String biography) {
-        try {
-            int newPersonId;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT COALESCE(MAX(person_id), 0) + 1 FROM persons")) {
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                newPersonId = rs.getInt(1);
+        String query = "SELECT COALESCE(MAX(person_id), 0) + 1 FROM persons";
+        String query2 = "INSERT INTO persons (person_id, name, birthdate, biography) VALUES (?, ?, ?::DATE, ?)";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                int newPersonId;
+                try (PreparedStatement stmt = conn.prepareStatement(
+                        query)) {
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    newPersonId = rs.getInt(1);
+                }
+                try (PreparedStatement stmt = conn.prepareStatement(
+                        query2)) {
+                    stmt.setInt(1, newPersonId);
+                    stmt.setString(2, name);
+                    stmt.setString(3, birthdate);
+                    stmt.setString(4, biography);
+                    stmt.executeUpdate();
+                }
+
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Error adding person: " + e.getMessage());
+                return false;
             }
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO persons (person_id, name, birthdate, biography) VALUES (?, ?, ?::DATE, ?)")) {
-                stmt.setInt(1, newPersonId);
-                stmt.setString(2, name);
-                stmt.setString(3, birthdate);
-                stmt.setString(4, biography);
-                stmt.executeUpdate();
-            }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error adding person: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
 
     // Delete a person
     public boolean deletePerson(int personId) {
-        try {
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "DELETE FROM persons WHERE person_id = ?")) {
-                stmt.setInt(1, personId);
-                stmt.executeUpdate();
+        String query = "DELETE FROM persons WHERE person_id = ?";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setInt(1, personId);
+                    stmt.executeUpdate();
+                }
+
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Error deleting person: " + e.getMessage());
+                return false;
             }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error deleting person: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
@@ -1225,67 +1434,94 @@ public class GuiClient extends Application {
     public List<String[]> getAllTheaters() {
         List<String[]> results = new ArrayList<>();
         String query = "SELECT theater_id, max_occupancy, is_3d, fancy_sound FROM theater ORDER BY theater_id;";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                results.add(new String[]{
-                    rs.getString("theater_id"),
-                    rs.getString("max_occupancy"),
-                    rs.getString("is_3d"),
-                    rs.getString("fancy_sound")
-                });
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(new String[]{
+                            rs.getString("theater_id"),
+                            rs.getString("max_occupancy"),
+                            rs.getString("is_3d"),
+                            rs.getString("fancy_sound")
+                    });
+                }
             }
         } catch (Exception e) {
             System.out.println("Error getting theaters: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
         }
         return results;
     }
 
     // Update theater
     public boolean updateTheater(int theaterId, int capacity, boolean is3d, boolean fancySound) {
-        try {
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE theater SET max_occupancy = ?, is_3d = ?, fancy_sound = ? WHERE theater_id = ?")) {
-                stmt.setInt(1, capacity);
-                stmt.setBoolean(2, is3d);
-                stmt.setBoolean(3, fancySound);
-                stmt.setInt(4, theaterId);
-                stmt.executeUpdate();
+        String query = "UPDATE theater SET max_occupancy = ?, is_3d = ?, fancy_sound = ? WHERE theater_id = ?";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setInt(1, capacity);
+                    stmt.setBoolean(2, is3d);
+                    stmt.setBoolean(3, fancySound);
+                    stmt.setInt(4, theaterId);
+                    stmt.executeUpdate();
+                }
+                conn.commit();
+                return true;
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Error updating theater: " + e.getMessage());
+                return false;
             }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error updating theater: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
+            System.out.println("Connection Error: " + e);
             return false;
         }
     }
 
     // Add a new theater
     public boolean addTheater(int capacity, boolean is3d, boolean fancySound) {
-        try {
-            int newTheaterId;
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT COALESCE(MAX(theater_id), 0) + 1 FROM theater")) {
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                newTheaterId = rs.getInt(1);
+        String query = "SELECT COALESCE(MAX(theater_id), 0) + 1 FROM theater";
+        String query2 = "INSERT INTO theater (theater_id, max_occupancy, is_3d, fancy_sound) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                int newTheaterId;
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    newTheaterId = rs.getInt(1);
+                }
+                try (PreparedStatement stmt = conn.prepareStatement(query2)) {
+                    stmt.setInt(1, newTheaterId);
+                    stmt.setInt(2, capacity);
+                    stmt.setBoolean(3, is3d);
+                    stmt.setBoolean(4, fancySound);
+                    stmt.executeUpdate();
+                }
+                conn.commit();
+                return true;
+
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Error adding theater: " + e.getMessage());
+                return false;
             }
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO theater (theater_id, max_occupancy, is_3d, fancy_sound) VALUES (?, ?, ?, ?)")) {
-                stmt.setInt(1, newTheaterId);
-                stmt.setInt(2, capacity);
-                stmt.setBoolean(3, is3d);
-                stmt.setBoolean(4, fancySound);
-                stmt.executeUpdate();
-            }
-            conn.commit();
-            return true;
         } catch (Exception e) {
-            System.out.println("Error adding theater: " + e.getMessage());
-            try { conn.rollback(); } catch (Exception ex) {}
+            System.out.println("Connection Error: " + e);
             return false;
         }
+
     }
 }
