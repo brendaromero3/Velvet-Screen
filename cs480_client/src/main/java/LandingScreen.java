@@ -38,7 +38,7 @@ public class LandingScreen {
             "-fx-font-size: 50px;" +
             "-fx-text-fill: " + TEXT_DARK + ";"
         );
-        Label est = new Label("CS 480 SPRING 2026 - GROUP 1");
+        Label est = new Label("CS 480 FALL 2026 - GROUP 1");
         est.setStyle(
             "-fx-font-size: 13px;" +
             "-fx-text-fill: " + PRIMARY_COLOR + ";" +
