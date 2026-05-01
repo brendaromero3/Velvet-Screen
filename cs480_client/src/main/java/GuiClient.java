@@ -468,9 +468,7 @@ public class GuiClient extends Application {
         query += "m.movie_id, m.title, m.original_language, " +
                 "m.release_date, m.major_studio, s.screening_id, s.date_time, " +
                 "t.theater_id, t.max_occupancy, t.is_3d, t.fancy_sound, " +
-                "(t.max_occupancy - COALESCE(" +
-                "  (SELECT SUM(num_tickets) FROM ticket_sale WHERE screening_id = s.screening_id), 0" +
-                ")) AS seats_available, m.length " +
+                "s.seats_left AS seats_available, m.length " +
                 "FROM movies m " +
                 "JOIN screening s ON m.movie_id = s.movie_id " +
                 "JOIN theater t ON s.theater_id = t.theater_id " +
@@ -1112,6 +1110,7 @@ public class GuiClient extends Application {
         String query2 = "UPDATE membership SET movies_watched = movies_watched + 1 WHERE membership_id = ?;";
         String query3 = "SELECT movies_watched FROM membership WHERE membership_id = ? FOR UPDATE;";
         String query4 = "UPDATE membership SET num_free_earned = num_free_earned + 1 WHERE membership_id = ?;";
+        String query5 = "UPDATE screening SET seats_left = seats_left - ? WHERE screening_id = ?";
 
         try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
@@ -1152,6 +1151,12 @@ public class GuiClient extends Application {
                         stmt.setInt(1, membership_id);
                         stmt.executeUpdate();
                     }
+                }
+
+                try(PreparedStatement stmt = conn.prepareStatement(query5)) {
+                    stmt.setInt(1, num_tickets);
+                    stmt.setInt(2, screening_id);
+                    stmt.executeUpdate();
                 }
 
                 conn.commit();

@@ -334,7 +334,7 @@ public class MovieDetailScreen {
             );
             int bookPrice = price;
             book.setOnAction(e -> {
-                stage.setScene(new BookingScreen(stage, app, onBrowse, onBack, movie, DandT, theater, bookPrice, surcharges).getScene());
+                stage.setScene(new BookingScreen(stage, app, onBrowse, onBack, screen, DandT, theater, bookPrice, surcharges).getScene());
             });
 
             table.add(book, 5, row); // adds the button the GridPane
