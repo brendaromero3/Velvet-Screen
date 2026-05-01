@@ -86,6 +86,7 @@ CREATE TABLE screening (
     movie_id        integer NOT NULL REFERENCES movies(movie_id),
     theater_id      integer NOT NULL REFERENCES theater(theater_id),
     date_time       timestamp NOT NULL,
+    seats_left      integer NOT NULL CHECK (seats_left >= 0),
     PRIMARY KEY (screening_id)
 );
 
@@ -223,8 +224,8 @@ INSERT INTO movies_genre VALUES
 ('Comedy', 2);
 
 INSERT INTO screening VALUES 
-(1, 1, 2, '2026-04-15 17:00:00'),  
-(2, 2, 3, '2023-12-25 12:00:00');
+(1, 1, 2, '2026-04-15 17:00:00', 598),
+(2, 2, 3, '2023-12-25 12:00:00', 200);
 
 INSERT INTO users VALUES
 (1, 'email1@gmail.com', '1234'),
