@@ -74,7 +74,7 @@ public class BookingScreen {
 
         FlowPane details = getDetails();
 
-        Spinner<Integer> ticketSpinner = new Spinner<>(1, 10, 1);
+        Spinner<Integer> ticketSpinner = new Spinner<>(1, 100, 1);
         ticketSpinner.setEditable(true);
         Label ticketLabel = new Label("Number of Tickets");
         ticketLabel.setStyle(bodyTextStyle(24));
