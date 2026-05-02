@@ -135,7 +135,9 @@ public class GuiClient extends Application {
                     goToDashboardArr[0],
                     goToLandingArr[0],
                     goToBrowseArr[0],
-                    goToPaymentsArr[0]
+                    goToPaymentsArr[0],
+                    goToRegisterArr[0],
+                    goToLoginArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };

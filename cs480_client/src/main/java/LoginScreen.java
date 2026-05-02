@@ -39,7 +39,6 @@ public class LoginScreen {
             "-fx-background-color: " + LandingScreen.BG_COLOR + ";"
         );
 
-        // title
         Label title = new Label("Welcome back.");
         title.setStyle(
             "-fx-font-family: 'Noto Serif Display';" +
@@ -54,7 +53,6 @@ public class LoginScreen {
             "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";"
         );
 
-        // email
         Label emailLabel = new Label("EMAIL");
         emailLabel.setStyle(
             "-fx-font-family: 'Questrial';" +
@@ -74,7 +72,6 @@ public class LoginScreen {
             "-fx-pref-width: 340px;"
         );
 
-        // password
         Label passwordLabel = new Label("PASSWORD");
         passwordLabel.setStyle(
             "-fx-font-family: 'Questrial';" +
@@ -94,7 +91,6 @@ public class LoginScreen {
             "-fx-pref-width: 340px;"
         );
 
-        // error label
         Label errorLabel = new Label("");
         errorLabel.setStyle(
             "-fx-font-family: 'Questrial';" +
@@ -102,7 +98,6 @@ public class LoginScreen {
             "-fx-text-fill: " + LandingScreen.ERROR_COLOR + ";"
         );
 
-        // login button
         Button loginBtn = new Button("Login");
         loginBtn.setStyle(
             "-fx-background-color: " + LandingScreen.PRIMARY_COLOR + ";" +
@@ -128,7 +123,32 @@ public class LoginScreen {
             }
         });
 
-        // register link
+        // Guest button
+        Button guestBtn = new Button("Continue as Guest");
+        guestBtn.setStyle(
+            "-fx-background-color: transparent;" +
+            "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";" +
+            "-fx-font-family: 'Questrial';" +
+            "-fx-font-size: 13px;" +
+            "-fx-padding: 10 0 10 0;" +
+            "-fx-pref-width: 340px;" +
+            "-fx-border-color: " + LandingScreen.BORDER_COLOR + ";" +
+            "-fx-border-radius: 4;" +
+            "-fx-background-radius: 4;" +
+            "-fx-cursor: hand;"
+        );
+        guestBtn.setOnAction(e -> {
+            if (app.goToBrowse != null) app.goToBrowse.run();
+        });
+
+        // Divider
+        Label orLabel = new Label("— or —");
+        orLabel.setStyle(
+            "-fx-font-family: 'Questrial';" +
+            "-fx-font-size: 11px;" +
+            "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";"
+        );
+
         Label registerLink = new Label("New here? Create an account");
         registerLink.setStyle(
             "-fx-font-family: 'Questrial';" +
@@ -138,7 +158,6 @@ public class LoginScreen {
         );
         registerLink.setOnMouseClicked(e -> onRegister.run());
 
-        // form
         VBox form = new VBox(8,
             title,
             subtitle,
@@ -150,8 +169,12 @@ public class LoginScreen {
             passwordField,
             new Region() {{ setPrefHeight(4); }},
             errorLabel,
-            new Region() {{ setPrefHeight(8); }},
+            new Region() {{ setPrefHeight(2); }},
             loginBtn,
+            new Region() {{ setPrefHeight(4); }},
+            orLabel,
+            new Region() {{ setPrefHeight(4); }},
+            guestBtn,
             new Region() {{ setPrefHeight(12); }},
             registerLink
         );

@@ -13,15 +13,20 @@ public class ClientProfileScreen {
     private Runnable onLogout;
     private Runnable onBrowse;
     private Runnable onPayments;
+    private Runnable onRegister;
+    private Runnable onLogin;
 
     public ClientProfileScreen(Stage stage, GuiClient app, Runnable onBack,
-                                Runnable onLogout, Runnable onBrowse, Runnable onPayments) {
+                                Runnable onLogout, Runnable onBrowse,
+                                Runnable onPayments, Runnable onRegister, Runnable onLogin) {
         this.stage      = stage;
         this.app        = app;
         this.onBack     = onBack;
         this.onLogout   = onLogout;
         this.onBrowse   = onBrowse;
         this.onPayments = onPayments;
+        this.onRegister = onRegister;
+        this.onLogin    = onLogin;
     }
 
     public Scene getScene() {
@@ -60,6 +65,90 @@ public class ClientProfileScreen {
             "-fx-border-width: 0 0 1 0;" +
             "-fx-background-color: " + LandingScreen.BG_COLOR + ";"
         );
+
+        // ── GUEST CHECK ──────────────────────────────────────────────────────
+        // If user is not logged in, show a simple register prompt instead of the form
+        boolean isGuest = app.user_id <= 0;
+
+        if (isGuest) {
+            Label title = new Label("My Account");
+            title.setStyle(
+                "-fx-font-family: 'Noto Serif Display';" +
+                "-fx-font-size: 26px;" +
+                "-fx-text-fill: " + LandingScreen.TEXT_DARK + ";"
+            );
+
+            Label message = new Label("You are currently browsing as a guest.");
+            message.setStyle(
+                "-fx-font-family: 'Questrial';" +
+                "-fx-font-size: 14px;" +
+                "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";"
+            );
+
+            Label subMessage = new Label("Create an account to save payment methods and earn rewards.");
+            subMessage.setStyle(
+                "-fx-font-family: 'Questrial';" +
+                "-fx-font-size: 13px;" +
+                "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";"
+            );
+
+            Button registerBtn = new Button("Create an Account");
+            registerBtn.setStyle(
+                "-fx-background-color: " + LandingScreen.PRIMARY_COLOR + ";" +
+                "-fx-text-fill: white;" +
+                "-fx-font-family: 'Questrial';" +
+                "-fx-font-size: 13px;" +
+                "-fx-padding: 12 28 12 28;" +
+                "-fx-border-radius: 4;" +
+                "-fx-background-radius: 4;" +
+                "-fx-cursor: hand;"
+            );
+            
+            registerBtn.setOnAction(e -> onRegister.run());
+
+            Button loginBtn = new Button("Already have an account? Login");
+            loginBtn.setStyle(
+                "-fx-background-color: transparent;" +
+                "-fx-text-fill: " + LandingScreen.PRIMARY_COLOR + ";" +
+                "-fx-font-family: 'Questrial';" +
+                "-fx-font-size: 12px;" +
+                "-fx-padding: 0;" +
+                "-fx-cursor: hand;" +
+                "-fx-border-color: transparent;"
+            );
+            loginBtn.setOnAction(e -> { if (onLogin != null) onLogin.run(); });
+
+            VBox guestContent = new VBox(16,
+                title, message, subMessage,
+                new Region() {{ setPrefHeight(8); }},
+                registerBtn, loginBtn
+            );
+            guestContent.setPadding(new Insets(40, 0, 40, 0));
+            guestContent.setMaxWidth(500);
+
+            HBox guestWrapper = new HBox(guestContent);
+            guestWrapper.setAlignment(Pos.TOP_CENTER);
+            guestWrapper.setStyle("-fx-background-color: " + LandingScreen.BG_COLOR + ";");
+
+            ScrollPane guestScroll = new ScrollPane(guestWrapper);
+            guestScroll.setFitToWidth(true);
+            guestScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            guestScroll.setStyle(
+                "-fx-background: " + LandingScreen.BG_COLOR + ";" +
+                "-fx-background-color: " + LandingScreen.BG_COLOR + ";" +
+                "-fx-border-color: transparent;" +
+                "-fx-focus-color: transparent;" +
+                "-fx-faint-focus-color: transparent;"
+            );
+
+            VBox root = new VBox(navbar, guestScroll);
+            VBox.setVgrow(guestScroll, Priority.ALWAYS);
+            root.setStyle("-fx-background-color: " + LandingScreen.BG_COLOR + ";");
+            return new Scene(root, 1000, 750);
+        }
+
+        // ── LOGGED IN VIEW ───────────────────────────────────────────────────
+        // Everything below is unchanged — only runs for logged in users
 
         String[] clientInfo = app.getClientInfo();
         String currentName      = clientInfo[0];
