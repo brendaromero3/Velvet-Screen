@@ -134,7 +134,7 @@ CREATE TABLE membership (
 
 CREATE TABLE card_info (
     card_number     text NOT NULL,
-    user_id         integer NOT NULL REFERENCES users(user_id),
+    user_id         integer REFERENCES users(user_id),
     PRIMARY KEY (card_number)
 );
 
