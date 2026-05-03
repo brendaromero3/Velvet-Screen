@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.control.CheckBox;
 
 public class PayScreen {
 
@@ -23,14 +24,19 @@ public class PayScreen {
     private double total;
     private String selectedCard;
     private Button currSelected;
+    private Label totalCost = new Label();
+    private boolean useFree;
+    private int numFreeToUse;
 
-    public PayScreen(Stage stage, GuiClient app, Runnable onBack, String[] movie, int numTickets, double total) {
+    public PayScreen(Stage stage, GuiClient app, Runnable onBack, String[] movie, int numTickets, double total, boolean useFree, int numFreeToUse) {
         this.stage   = stage;
         this.app     = app;
         this.onBack  = onBack;
         this.movie = movie;
         this.numTickets = numTickets;
         this.total = total;
+        this.useFree = useFree;
+        this.numFreeToUse = numFreeToUse;
     }
 
     public Scene getScene() {
@@ -86,10 +92,22 @@ public class PayScreen {
             }
 
             int screeningId = Integer.parseInt(movie[5]);
-            Integer bookingId = app.book(screeningId, numTickets, total, selectedCard);
+
+            int usedFree = 0;
+
+            if (useFree) {
+                usedFree = app.freeTickets(numFreeToUse);
+            }
+
+            double ticketPrice = total / numTickets;
+            double finalTotal = (numTickets - usedFree) * ticketPrice;
+
+            totalCost.setText("$" + finalTotal);
+
+            Integer bookingId = app.book(screeningId, numTickets, finalTotal, selectedCard);
 
             if (bookingId != null) {
-                stage.setScene(new ConfirmScreen(stage, app, onBack, movie, numTickets, total, bookingId).getScene());
+                stage.setScene(new ConfirmScreen(stage, app, onBack, movie, numTickets, finalTotal, bookingId).getScene());
             } else {
                 System.out.println("Booking failed");
             }
@@ -219,7 +237,7 @@ public class PayScreen {
     }
 
     private HBox orderSummary(Button addBtn) {
-        Label ticketsLbl = new Label("# Tickets");
+        Label ticketsLbl = new Label("Number of Tickets");
         ticketsLbl.setStyle(bodyTextStyle(20));
 
         Label ticketCost = new Label(String.valueOf(numTickets));
@@ -230,7 +248,7 @@ public class PayScreen {
         Label totalLbl = new Label("Total");
         totalLbl.setStyle(bodyTextStyle(20));
 
-        Label totalCost = new Label("$" + total);
+        totalCost.setText("$" + total);
         totalCost.setStyle(bodyTextStyle(20));
 
         VBox totalBox = new VBox(4, totalLbl, totalCost);

@@ -112,7 +112,7 @@ public class ClientDashboard {
             "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";"
         );
 
-        Label rewardCount = new Label(moviesWatched + " / 10");
+        Label rewardCount = new Label(app.getRewardProgress() + " / 10");
         rewardCount.setStyle(
             "-fx-font-family: 'Questrial';" +
             "-fx-font-size: 13px;" +
@@ -129,7 +129,7 @@ public class ClientDashboard {
         HBox rewardInfo = new HBox(6, rewardCount, rewardSub);
         rewardInfo.setAlignment(Pos.CENTER_LEFT);
 
-        double progress = (moviesWatched % 10) / 10.0;
+        double progress = app.getRewardProgress() / 10.0;
         ProgressBar progressBar = new ProgressBar(progress);
         progressBar.setPrefWidth(400);
         progressBar.setStyle("-fx-accent: " + LandingScreen.SUCCESS_COLOR + ";");

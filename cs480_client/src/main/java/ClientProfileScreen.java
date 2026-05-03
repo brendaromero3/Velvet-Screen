@@ -206,14 +206,14 @@ public class ClientProfileScreen {
         Label rewardSection = new Label("REWARD PROGRAM");
         rewardSection.setStyle(sectionLabelStyle());
 
-        Label rewardCount = new Label(moviesWatched + " / 10 tickets to your next free movie.");
+        Label rewardCount = new Label(app.getRewardProgress() + " / 10 tickets to your next free movie.");
         rewardCount.setStyle(
             "-fx-font-family: 'Questrial';" +
             "-fx-font-size: 13px;" +
             "-fx-text-fill: " + LandingScreen.SUCCESS_COLOR + ";"
         );
 
-        double progress = (moviesWatched % 10) / 10.0;
+        double progress = app.getRewardProgress() / 10.0;
         ProgressBar progressBar = new ProgressBar(progress);
         progressBar.setPrefWidth(500);
         progressBar.setStyle("-fx-accent: " + LandingScreen.SUCCESS_COLOR + ";");

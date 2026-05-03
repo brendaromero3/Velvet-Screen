@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.lang.Math;
 
 public class GuiClient extends Application {
 
@@ -318,6 +319,10 @@ public class GuiClient extends Application {
             System.out.println("Error getting movies watched: " + e.getMessage());
         }
         return 0;
+    }
+
+    public int getRewardProgress() {
+        return getMoviesWatched() % 10;
     }
 
     // Login
@@ -1177,6 +1182,23 @@ public class GuiClient extends Application {
         }
     }
 
+    // returns how many free tickets the user has
+    public int getFreeTickets() {
+        String query = "SELECT num_free_earned FROM membership WHERE membership_id = ?;";
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, membership_id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("num_free_earned");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return 0;
+    }
+
     public int freeTickets(int num_tickets) {
         String query = "SELECT num_free_earned FROM membership WHERE membership_id = ? FOR UPDATE;";
         String query1 = "UPDATE membership SET num_free_earned = num_free_earned - ? WHERE membership_id = ?;";
@@ -1203,21 +1225,18 @@ public class GuiClient extends Application {
                     curr = rs.getInt("num_free_earned");
                 }
 
-                if (curr < num_tickets) {
-                    try { conn.rollback(); } catch (Exception e) {
-                        System.out.println("Rollback error: " + e);
-                    }
-                    return 0;
-                }
+                int usable = Math.min(curr, num_tickets);
 
-                try (PreparedStatement stmt = conn.prepareStatement(query1)) {
-                    stmt.setInt(1, num_tickets);
-                    stmt.setInt(2, membership_id);
-                    stmt.executeUpdate();
+                if (usable > 0) {
+                    try (PreparedStatement stmt = conn.prepareStatement(query1)) {
+                        stmt.setInt(1, usable);
+                        stmt.setInt(2, membership_id);
+                        stmt.executeUpdate();
+                    }
                 }
 
                 conn.commit();
-                return num_tickets;
+                return usable;
             } catch (Exception e) {
                 try {
                     conn.rollback();

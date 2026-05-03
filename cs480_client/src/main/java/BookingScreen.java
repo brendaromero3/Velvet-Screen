@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.layout.FlowPane;
+import java.lang.Math;
 
 public class BookingScreen {
 
@@ -26,6 +27,10 @@ public class BookingScreen {
     private int price;
     private Map<String, Integer> surcharges;
     private double ticketTotal = 0;
+    private boolean useFreeTickets = false;
+    private int freeTicketsUsed = 0;
+    private double origTotal;
+    private Label totalValueLbl;
 
     public BookingScreen(Stage stage, GuiClient app, Runnable onBack, Runnable onTitle, String[] movie, String screen_time, String theater_id, int price, Map<String, Integer> surcharges) {
         this.stage   = stage;
@@ -79,12 +84,57 @@ public class BookingScreen {
         Label ticketLabel = new Label("Number of Tickets");
         ticketLabel.setStyle(bodyTextStyle(24));
 
-        VBox ticketBox = new VBox(10, ticketLabel, ticketSpinner);
+        Label freeLbl = new Label("Use it? ");
+        freeLbl.setStyle(bodyTextStyle(18));
+
+        Label howManyLbl = new Label("You have " + app.getFreeTickets() + " free ticket(s) ");
+        howManyLbl.setStyle(bodyTextStyle(18));
+
+        CheckBox freeCheckBox = new CheckBox();
+
+//        int availableFreeTickets = app.freeTickets();
+
+        freeCheckBox.setOnAction(e -> {
+            useFreeTickets = freeCheckBox.isSelected();
+
+            int numTickets = ticketSpinner.getValue();
+            int freeCount = app.getFreeTickets();
+            int usableFree = Math.min(freeCount, numTickets);
+
+            if (useFreeTickets) {
+                freeTicketsUsed = usableFree;
+            } else {
+                freeTicketsUsed = 0;
+            }
+
+            double ticketPrice = origTotal / numTickets;
+            ticketTotal = (numTickets - freeTicketsUsed) * ticketPrice;
+
+            totalValueLbl.setText("$" + ticketTotal);
+        });
+
+        HBox temp = new HBox(freeLbl, freeCheckBox);
+        VBox freeBox = new VBox(howManyLbl, temp);
+
+        VBox ticketBox = new VBox(10, ticketLabel, ticketSpinner, freeBox);
 
         VBox prices = priceBreakdown(ticketSpinner.getValue());
 
         ticketSpinner.valueProperty().addListener((obs, oldVal, newVal) -> {
             prices.getChildren().setAll(priceBreakdown(newVal));
+
+            int numTickets = newVal;
+
+            if (useFreeTickets) {
+                int freeCount = app.getFreeTickets();
+                int usableFree = Math.min(freeCount, numTickets);
+                freeTicketsUsed = usableFree;
+
+                double ticketPrice = origTotal / numTickets;
+                ticketTotal = (numTickets - freeTicketsUsed) * ticketPrice;
+
+                totalValueLbl.setText("$" + ticketTotal);
+            }
         });
 
         Button payBtn = new Button("Purchase");
@@ -103,7 +153,7 @@ public class BookingScreen {
         priceInfo.setAlignment(Pos.CENTER);
 
         payBtn.setOnAction(e -> {
-            stage.setScene(new PayScreen(stage, app, onBack, movie, ticketSpinner.getValue(), ticketTotal).getScene());
+            stage.setScene(new PayScreen(stage, app, onBack, movie, ticketSpinner.getValue(), ticketTotal, useFreeTickets, freeTicketsUsed).getScene());
         });
 
         VBox resultsBox = new VBox(8);
@@ -239,13 +289,15 @@ public class BookingScreen {
 
         double cost = runningTotal * numTickets;
         ticketTotal = cost;
-        Label totalValue = new Label("$" + cost);
-        totalValue.setStyle(bodyTextStyle(20));
+        origTotal = cost;
+
+        totalValueLbl = new Label("$" + cost);
+        totalValueLbl.setStyle(bodyTextStyle(20));
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        totalCost.getChildren().addAll(totalLabel, spacer, totalValue);
+        totalCost.getChildren().addAll(totalLabel, spacer, totalValueLbl);
 
         p.getChildren().addAll(label, topLine, surcharge, bottomLine, totalCost);
 
