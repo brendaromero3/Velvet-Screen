@@ -68,7 +68,7 @@ public class ClientProfileScreen {
 
         // ── GUEST CHECK ──────────────────────────────────────────────────────
         // If user is not logged in, show a simple register prompt instead of the form
-        boolean isGuest = app.user_id <= 0;
+        boolean isGuest = app.isGuest();
 
         if (isGuest) {
             Label title = new Label("My Account");

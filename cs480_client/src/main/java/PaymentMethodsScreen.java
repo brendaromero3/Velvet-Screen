@@ -5,6 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.List;
+import java.util.ArrayList;
 import javafx.scene.layout.StackPane;
 
 public class PaymentMethodsScreen {
@@ -182,7 +183,15 @@ public class PaymentMethodsScreen {
 
         loadCardsRef[0] = () -> {
             cardsBox.getChildren().clear();
-            List<String[]> cards = app.getPaymentMethods();
+            List<String[]> cards;
+
+            boolean isGuest = app.isGuest();
+
+            if (!isGuest) {
+                cards = app.getPaymentMethods();
+            } else {
+                cards = new ArrayList<>();
+            }
 
             if (cards.isEmpty()) {
                 Label noCards = new Label("No payment methods saved yet.");

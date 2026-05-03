@@ -38,7 +38,8 @@ public class GuiClient extends Application {
     ListView<String> messageLogs = new ListView<String>();
     public static String username;
 
-    int user_id, membership_id;
+    Integer user_id;
+    int membership_id;
     boolean admin;
 
     // Navigation runnables accessible across the app
@@ -62,6 +63,12 @@ public class GuiClient extends Application {
         launch(args);
     }
 
+    public void logout() {
+        user_id = null;
+        membership_id = -1;
+        admin = false;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Font.loadFont(getClass().getResourceAsStream("/NotoSerifDisplay-VariableFont_wdth,wght.ttf"), 14);
@@ -83,9 +90,7 @@ public class GuiClient extends Application {
         Runnable[] goToAdminTheatersArr   = new Runnable[1];
 
         goToLandingArr[0] = () -> {
-            user_id = -1;
-            membership_id = -1;
-            admin = false;
+            logout();
             primaryStage.setScene(new LandingScreen(primaryStage, goToLoginArr[0], goToRegisterArr[0]).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
@@ -249,7 +254,9 @@ public class GuiClient extends Application {
         return DriverManager.getConnection("jdbc:postgresql://localhost:5432/movie_ticketing", "lena", "");
     }
 
-
+    boolean isGuest() {
+        return user_id == null || user_id <= 0;
+    }
     // Checking if a user is an admin
     private boolean isAdmin(int id) {
         String query = "SELECT * FROM administrators WHERE user_id = ?;";
@@ -637,7 +644,12 @@ public class GuiClient extends Application {
             try {
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
                     stmt.setString(1, card_num);
-                    stmt.setInt(2, user_id);
+
+                    if (user_id != null) {
+                        stmt.setInt(2, user_id);
+                    } else {
+                        stmt.setNull(2, Types.INTEGER);
+                    }
                     stmt.executeUpdate();
                 }
 
@@ -1110,29 +1122,53 @@ public class GuiClient extends Application {
     }
 
     public Integer book(int screening_id, int num_tickets, double price, String card_num) {
-        String query = "INSERT INTO ticket_sale (sale_id, user_id, screening_id, " +
+        String getID = "SELECT COALESCE(MAX(sale_id), 0) + 1 FROM ticket_sale";
+
+        String insertSale = "INSERT INTO ticket_sale (sale_id, user_id, screening_id, " +
                 "num_tickets, purchase_date, total_price, card_number) VALUES " +
                 "(?,?,?,?,CURRENT_TIMESTAMP,?,?);";
-        String query1 = "SELECT COALESCE(MAX(sale_id), 0) + 1 FROM ticket_sale";
-        String query2 = "UPDATE membership SET movies_watched = movies_watched + 1 WHERE membership_id = ?;";
-        String query3 = "SELECT movies_watched FROM membership WHERE membership_id = ? FOR UPDATE;";
-        String query4 = "UPDATE membership SET num_free_earned = num_free_earned + 1 WHERE membership_id = ?;";
-        String query5 = "UPDATE screening SET seats_left = seats_left - ? WHERE screening_id = ?";
+
+        String lockScreening = "SELECT seats_left FROM screening WHERE screening_id = ? FOR UPDATE;";
+        String updateSeats = "UPDATE screening SET seats_left = seats_left - ? WHERE screening_id = ?";
+
+        String lockMembership = "SELECT movies_watched, num_free_earned FROM membership WHERE membership_id = ? FOR UPDATE;";
+        String updateMembership = "UPDATE membership SET movies_watched = movies_watched + 1 WHERE membership_id = ?;";
+        String updateFree = "UPDATE membership SET num_free_earned = num_free_earned + 1 WHERE membership_id = ?;";
 
         try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
 
             try {
                 int sale_id;
-                try (PreparedStatement stmt = conn.prepareStatement(query1)) {
+                try (PreparedStatement stmt = conn.prepareStatement(getID)) {
                     ResultSet rs = stmt.executeQuery();
                     rs.next();
                     sale_id = rs.getInt(1);
                 }
 
-                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                int seatsLeft;
+                try (PreparedStatement stmt = conn.prepareStatement(lockScreening)) {
+                    stmt.setInt(1, screening_id);
+                    ResultSet rs = stmt.executeQuery();
+                    if (!rs.next()) {
+                        conn.rollback();
+                        return null;
+                    }
+                    seatsLeft = rs.getInt("seats_left");
+                }
+                if (seatsLeft < num_tickets) {
+                    conn.rollback();
+                    return null;
+                }
+
+                try (PreparedStatement stmt = conn.prepareStatement(insertSale)) {
                     stmt.setInt(1, sale_id);
-                    stmt.setInt(2, user_id);
+
+                    if (user_id != null) {
+                        stmt.setInt(2, user_id);
+                    } else {
+                        stmt.setNull(2, Types.INTEGER);
+                    }
                     stmt.setInt(3, screening_id);
                     stmt.setInt(4, num_tickets);
                     stmt.setDouble(5, price);
@@ -1140,31 +1176,43 @@ public class GuiClient extends Application {
                     stmt.executeUpdate();
                 }
 
-                try (PreparedStatement stmt = conn.prepareStatement(query2)) {
-                    stmt.setInt(1, membership_id);
-                    stmt.executeUpdate();
-                }
-
-                int num_watched;
-                try (PreparedStatement stmt = conn.prepareStatement(query3)) {
-                    stmt.setInt(1, membership_id);
-                    ResultSet rs = stmt.executeQuery();
-                    rs.next();
-                    num_watched = rs.getInt("movies_watched");
-                }
-
-                if (num_watched % 10 == 0) {
-                    try (PreparedStatement stmt = conn.prepareStatement(query4)) {
-                        stmt.setInt(1, membership_id);
-                        stmt.executeUpdate();
-                    }
-                }
-
-                try(PreparedStatement stmt = conn.prepareStatement(query5)) {
+                try (PreparedStatement stmt = conn.prepareStatement(updateSeats)) {
                     stmt.setInt(1, num_tickets);
                     stmt.setInt(2, screening_id);
                     stmt.executeUpdate();
                 }
+
+                if (!isGuest()) {
+                    int num_watched;
+                    try (PreparedStatement stmt = conn.prepareStatement(lockMembership)) {
+                        stmt.setInt(1, membership_id);
+                        ResultSet rs = stmt.executeQuery();
+                        if (!rs.next()) {
+                            conn.rollback();
+                            return null;
+                        }
+                        num_watched = rs.getInt("movies_watched");
+                    }
+
+                    try (PreparedStatement stmt = conn.prepareStatement(updateMembership)) {
+                        stmt.setInt(1, membership_id);
+                        stmt.executeUpdate();
+                    }
+                    num_watched++;
+
+                    if (num_watched % 10 == 0) {
+                        try (PreparedStatement stmt = conn.prepareStatement(updateFree)) {
+                            stmt.setInt(1, membership_id);
+                            stmt.executeUpdate();
+                        }
+                    }
+                }
+
+//                try(PreparedStatement stmt = conn.prepareStatement(query5)) {
+//                    stmt.setInt(1, num_tickets);
+//                    stmt.setInt(2, screening_id);
+//                    stmt.executeUpdate();
+//                }
 
                 conn.commit();
                 return sale_id;

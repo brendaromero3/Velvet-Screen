@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.control.CheckBox;
 
+
 public class PayScreen {
 
     private Stage stage;
@@ -38,6 +39,9 @@ public class PayScreen {
         this.useFree = useFree;
         this.numFreeToUse = numFreeToUse;
     }
+
+
+
 
     public Scene getScene() {
         // navbar
@@ -65,14 +69,47 @@ public class PayScreen {
                         "-fx-background-color: " + LandingScreen.BG_COLOR + ";"
         );
 
-        // Title
-        Label title = new Label("Payment Methods");
-        title.setStyle(
-                "-fx-font-family: 'Noto Serif Display';" +
-                        "-fx-font-size: 26px;" +
-                        "-fx-text-fill: " + LandingScreen.TEXT_DARK + ";"
-        );
+        boolean isGuest = app.isGuest();
+        VBox content;
 
+        if (isGuest) {
+            content  = guestPay();
+        }
+        else {
+            content = userPay();
+        }
+
+        VBox root = new VBox(navbar, content);
+        VBox.setVgrow(content, Priority.ALWAYS);
+        root.setStyle("-fx-background-color: " + LandingScreen.BG_COLOR + ";");
+
+        return new Scene(root, 1000, 750);
+    }
+
+    private void bookTickets(String cardNumber) {
+        int screeningId = Integer.parseInt(movie[5]);
+
+        int usedFree = 0;
+
+        if (useFree) {
+            usedFree = app.freeTickets(numFreeToUse);
+        }
+
+        double ticketPrice = total / numTickets;
+        double finalTotal = (numTickets - usedFree) * ticketPrice;
+
+        totalCost.setText("$" + finalTotal);
+
+        Integer bookingId = app.book(screeningId, numTickets, finalTotal, cardNumber);
+
+        if (bookingId != null) {
+            stage.setScene(new ConfirmScreen(stage, app, onBack, movie, numTickets, finalTotal, bookingId).getScene());
+        } else {
+            System.out.println("Booking failed");
+        }
+    }
+
+    public VBox userPay() {
         Button confirmBtn = new Button("Confirm Payment");
         confirmBtn.setDisable(true);
         confirmBtn.setStyle(
@@ -91,26 +128,7 @@ public class PayScreen {
                 return;
             }
 
-            int screeningId = Integer.parseInt(movie[5]);
-
-            int usedFree = 0;
-
-            if (useFree) {
-                usedFree = app.freeTickets(numFreeToUse);
-            }
-
-            double ticketPrice = total / numTickets;
-            double finalTotal = (numTickets - usedFree) * ticketPrice;
-
-            totalCost.setText("$" + finalTotal);
-
-            Integer bookingId = app.book(screeningId, numTickets, finalTotal, selectedCard);
-
-            if (bookingId != null) {
-                stage.setScene(new ConfirmScreen(stage, app, onBack, movie, numTickets, finalTotal, bookingId).getScene());
-            } else {
-                System.out.println("Booking failed");
-            }
+            bookTickets(selectedCard);
         });
 
         // Cards list
@@ -121,6 +139,9 @@ public class PayScreen {
 
         loadCardsRef[0] = () -> {
             cardsBox.getChildren().clear();
+
+            cardsBox.getChildren().clear();
+
             List<String[]> cards = app.getPaymentMethods();
 
             if (cards.isEmpty()) {
@@ -158,8 +179,6 @@ public class PayScreen {
         };
 
         loadCardsRef[0].run();
-
-        List<String[]> cards = app.getPaymentMethods();
 
         Button addBtn = new Button("+ Add Payment Method");
         addBtn.setStyle(
@@ -210,11 +229,175 @@ public class PayScreen {
         VBox.setVgrow(scroll, Priority.ALWAYS);
         content.setAlignment(Pos.CENTER);
 
-        VBox root = new VBox(navbar, content);
-        VBox.setVgrow(content, Priority.ALWAYS);
-        root.setStyle("-fx-background-color: " + LandingScreen.BG_COLOR + ";");
+        return content;
+    }
 
-        return new Scene(root, 1000, 750);
+    public VBox guestPay() {
+        Label ticketsLbl = new Label("Number of Tickets");
+        ticketsLbl.setStyle(bodyTextStyle(20));
+
+        Label ticketCost = new Label(String.valueOf(numTickets));
+        ticketCost.setStyle(bodyTextStyle(20));
+
+        VBox ticketBox = new VBox(4, ticketsLbl, ticketCost);
+
+        Label totalLbl = new Label("Total");
+        totalLbl.setStyle(bodyTextStyle(20));
+
+        totalCost.setText("$" + total);
+        totalCost.setStyle(bodyTextStyle(20));
+
+        VBox totalBox = new VBox(4, totalLbl, totalCost);
+
+        HBox sum = new HBox(100, ticketBox, totalBox);
+        sum.setAlignment(Pos.CENTER);
+
+        Label cardTypeLabel = new Label("CARD TYPE");
+        cardTypeLabel.setStyle(fieldLabelStyle());
+
+        ToggleGroup typeGroup = new ToggleGroup();
+        ToggleButton creditBtn = new ToggleButton("Credit");
+        ToggleButton debitBtn  = new ToggleButton("Debit");
+        creditBtn.setToggleGroup(typeGroup);
+        debitBtn.setToggleGroup(typeGroup);
+
+        String toggleSelected =
+                "-fx-background-color: " + LandingScreen.PRIMARY_COLOR + ";" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-family: 'Questrial';" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-padding: 6 20 6 20;" +
+                        "-fx-cursor: hand;";
+        String toggleUnselected =
+                "-fx-background-color: " + LandingScreen.WHITE + ";" +
+                        "-fx-text-fill: " + LandingScreen.TEXT_DARK + ";" +
+                        "-fx-font-family: 'Questrial';" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-padding: 6 20 6 20;" +
+                        "-fx-border-color: " + LandingScreen.BORDER_COLOR + ";" +
+                        "-fx-cursor: hand;";
+
+        Label cardNumberLabel = new Label("CARD NUMBER");
+        cardNumberLabel.setStyle(fieldLabelStyle());
+        TextField cardNumberField = new TextField();
+        cardNumberField.setPromptText("1234 5678 9012 3456");
+        cardNumberField.setStyle(fieldStyle());
+
+        Label billingLabel = new Label("BILLING ADDRESS");
+        billingLabel.setStyle(fieldLabelStyle());
+        TextField billingField = new TextField();
+        billingField.setPromptText("12 Park Lane, NYC");
+        billingField.setStyle(fieldStyle());
+
+        VBox billingBox = new VBox(4, billingLabel, billingField);
+
+        creditBtn.setSelected(true);
+        creditBtn.setStyle(toggleSelected);
+        debitBtn.setStyle(toggleUnselected);
+        billingBox.setVisible(true);
+        billingBox.setManaged(true);
+
+        creditBtn.setOnAction(e -> {
+            creditBtn.setStyle(toggleSelected);
+            debitBtn.setStyle(toggleUnselected);
+            billingBox.setVisible(true);
+            billingBox.setManaged(true);
+        });
+        debitBtn.setOnAction(e -> {
+            debitBtn.setStyle(toggleSelected);
+            creditBtn.setStyle(toggleUnselected);
+            billingBox.setVisible(false);
+            billingBox.setManaged(false);
+        });
+
+        Label errorLabel = new Label("");
+        errorLabel.setStyle(
+                "-fx-font-family: 'Questrial';" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-text-fill: " + LandingScreen.ERROR_COLOR + ";"
+        );
+
+        Button confirmBtn = new Button("Confirm");
+        confirmBtn.setStyle(
+                "-fx-background-color: " + LandingScreen.PRIMARY_COLOR + ";" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-family: 'Questrial';" +
+                        "-fx-font-size: 13px;" +
+                        "-fx-padding: 10 0 10 0;" +
+                        "-fx-pref-width: 340px;" +
+                        "-fx-border-radius: 4;" +
+                        "-fx-background-radius: 4;" +
+                        "-fx-cursor: hand;"
+        );
+
+        confirmBtn.setOnAction(e -> {
+            String cardNumber = cardNumberField.getText().trim();
+            String billing    = creditBtn.isSelected() ? billingField.getText().trim() : null;
+
+            if (cardNumber.isEmpty()) {
+                errorLabel.setText("Please enter a card number.");
+                return;
+            }
+            if (creditBtn.isSelected() && (billing == null || billing.isEmpty())) {
+                errorLabel.setText("Please enter a billing address for credit cards.");
+                return;
+            }
+
+            boolean success = app.addPaymentMethod(cardNumber, billing);
+
+            if (!success) {
+                errorLabel.setText("Failed to save. Card number may already exist.");
+            } else {
+                bookTickets(cardNumber);
+            }
+        });
+
+        HBox typeToggle = new HBox(0, creditBtn, debitBtn);
+
+        VBox form = new VBox(8,
+                new Region() {{ setPrefHeight(12); }},
+                cardTypeLabel,
+                typeToggle,
+                new Region() {{ setPrefHeight(8); }},
+                cardNumberLabel,
+                cardNumberField,
+                new Region() {{ setPrefHeight(8); }},
+                billingBox,
+                new Region() {{ setPrefHeight(4); }},
+                errorLabel,
+                new Region() {{ setPrefHeight(8); }},
+                confirmBtn
+        );
+        form.setAlignment(Pos.TOP_LEFT);
+        form.setMaxWidth(340);
+        form.setPadding(new Insets(40, 0, 40, 0));
+
+        HBox formWrapper = new HBox(form);
+        formWrapper.setAlignment(Pos.CENTER);
+        formWrapper.setStyle("-fx-background-color: " + LandingScreen.BG_COLOR + ";");
+
+
+        VBox resultsBox = new VBox(8);
+        resultsBox.setFillWidth(true);
+
+        ScrollPane scroll = new ScrollPane(resultsBox);
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroll.setStyle(
+                "-fx-background: " + LandingScreen.BG_COLOR + ";" +
+                        "-fx-background-color: " + LandingScreen.BG_COLOR + ";" +
+                        "-fx-border-color: transparent;" +
+                        "-fx-focus-color: transparent;" +
+                        "-fx-faint-focus-color: transparent;"
+        );
+
+        VBox content = new VBox(30, sum, formWrapper, scroll);
+        content.setPadding(new Insets(30, 40, 30, 40));
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+        content.setAlignment(Pos.CENTER);
+
+        return content;
     }
 
     private Button navButton(String text) {
@@ -234,6 +417,23 @@ public class PayScreen {
         return  "-fx-font-family: 'Questrial';" +
                 "-fx-font-size: " + size + "px;" +
                 "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";";
+    }
+
+    private String fieldLabelStyle() {
+        return "-fx-font-family: 'Questrial';" +
+                "-fx-font-size: 11px;" +
+                "-fx-text-fill: " + LandingScreen.TEXT_MUTED + ";";
+    }
+
+    private String fieldStyle() {
+        return "-fx-font-family: 'Questrial';" +
+                "-fx-font-size: 13px;" +
+                "-fx-padding: 10 12 10 12;" +
+                "-fx-background-color: " + LandingScreen.WHITE + ";" +
+                "-fx-border-color: " + LandingScreen.BORDER_COLOR + ";" +
+                "-fx-border-radius: 4;" +
+                "-fx-background-radius: 4;" +
+                "-fx-pref-width: 340px;";
     }
 
     private HBox orderSummary(Button addBtn) {
