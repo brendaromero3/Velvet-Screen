@@ -111,7 +111,7 @@ public class GuiClient extends Application {
         };
 
         goToMovieDetail = (movie) -> {
-            primaryStage.setScene(new MovieDetailScreen(primaryStage, this, goToLandingArr[0], goToBrowseArr[0], goToLoginArr[0], goToAccountArr[0], goToPaymentsArr[0], movie).getScene());
+            primaryStage.setScene(new MovieDetailScreen(primaryStage, this, goToDashboardArr[0], goToBrowseArr[0], goToLoginArr[0], goToAccountArr[0], goToPaymentsArr[0], movie).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
 
@@ -1176,10 +1176,16 @@ public class GuiClient extends Application {
                     stmt.executeUpdate();
                 }
 
+                int updated;
                 try (PreparedStatement stmt = conn.prepareStatement(updateSeats)) {
                     stmt.setInt(1, num_tickets);
                     stmt.setInt(2, screening_id);
-                    stmt.executeUpdate();
+                    updated = stmt.executeUpdate();
+                }
+
+                if (updated == 0) {
+                    conn.rollback();
+                    return null;
                 }
 
                 if (!isGuest()) {
@@ -1207,12 +1213,6 @@ public class GuiClient extends Application {
                         }
                     }
                 }
-
-//                try(PreparedStatement stmt = conn.prepareStatement(query5)) {
-//                    stmt.setInt(1, num_tickets);
-//                    stmt.setInt(2, screening_id);
-//                    stmt.executeUpdate();
-//                }
 
                 conn.commit();
                 return sale_id;

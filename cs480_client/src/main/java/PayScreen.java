@@ -343,13 +343,8 @@ public class PayScreen {
                 return;
             }
 
-            boolean success = app.addPaymentMethod(cardNumber, billing);
+            bookTickets(cardNumber);
 
-            if (!success) {
-                errorLabel.setText("Failed to save. Card number may already exist.");
-            } else {
-                bookTickets(cardNumber);
-            }
         });
 
         HBox typeToggle = new HBox(0, creditBtn, debitBtn);
