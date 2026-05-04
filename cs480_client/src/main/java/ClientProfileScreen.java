@@ -39,7 +39,16 @@ public class ClientProfileScreen {
             "-fx-text-fill: " + LandingScreen.TEXT_DARK + ";" +
             "-fx-cursor: hand;"
         );
-        wordmark.setOnMouseClicked(e -> { if (onBack != null) onBack.run(); });
+        boolean isGuest = app.isGuest();
+        if (!isGuest) {
+            wordmark.setOnMouseClicked(e -> {
+                if (onBack != null) onBack.run();
+            });
+        } else {
+            wordmark.setOnMouseClicked(e -> {
+                if (onBrowse != null) onBrowse.run();
+            });
+        }
 
         Button browseBtn   = navButton("Browse");
         Button accountBtn  = navButton("My Account");
@@ -57,7 +66,13 @@ public class ClientProfileScreen {
         Region navSpacer = new Region();
         HBox.setHgrow(navSpacer, Priority.ALWAYS);
 
-        HBox navbar = new HBox(12, wordmark, navSpacer, browseBtn, accountBtn, paymentsBtn, logoutBtn);
+        HBox navbar;
+        if (!isGuest) {
+            navbar = new HBox(12, wordmark, navSpacer, browseBtn, accountBtn, paymentsBtn, logoutBtn);
+        } else {
+            navbar = new HBox(12, wordmark, navSpacer, browseBtn, accountBtn, logoutBtn);
+        }
+
         navbar.setAlignment(Pos.CENTER_LEFT);
         navbar.setStyle(
             "-fx-padding: 16 40 16 40;" +
@@ -68,7 +83,6 @@ public class ClientProfileScreen {
 
         // ── GUEST CHECK ──────────────────────────────────────────────────────
         // If user is not logged in, show a simple register prompt instead of the form
-        boolean isGuest = app.isGuest();
 
         if (isGuest) {
             Label title = new Label("My Account");

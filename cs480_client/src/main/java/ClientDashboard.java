@@ -48,7 +48,14 @@ public class ClientDashboard {
         Region navSpacer = new Region();
         HBox.setHgrow(navSpacer, Priority.ALWAYS);
 
-        HBox navbar = new HBox(12, wordmark, navSpacer, browseBtn, accountBtn, paymentsBtn, logoutBtn);
+        boolean isGuest = app.isGuest();
+        HBox navbar;
+        if (!isGuest) {
+            navbar = new HBox(12, wordmark, navSpacer, browseBtn, accountBtn, paymentsBtn, logoutBtn);
+        } else {
+            navbar = new HBox(12, wordmark, navSpacer, browseBtn, accountBtn, logoutBtn);
+        }
+
         navbar.setAlignment(Pos.CENTER_LEFT);
         navbar.setStyle(
             "-fx-padding: 16 40 16 40;" +
