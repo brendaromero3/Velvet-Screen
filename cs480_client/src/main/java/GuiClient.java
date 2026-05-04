@@ -170,7 +170,8 @@ public class GuiClient extends Application {
                     goToAdminAnalyticsArr[0],
                     goToAdminMoviesArr[0],
                     goToAdminPeopleArr[0],
-                    goToAdminTheatersArr[0]
+                    goToAdminTheatersArr[0],
+                    goToRegisterArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
@@ -183,7 +184,8 @@ public class GuiClient extends Application {
                     goToAdminScreeningsArr[0],
                     goToAdminMoviesArr[0],
                     goToAdminPeopleArr[0],
-                    goToAdminTheatersArr[0]
+                    goToAdminTheatersArr[0],
+                    goToRegisterArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
@@ -196,7 +198,8 @@ public class GuiClient extends Application {
                     goToAdminScreeningsArr[0],
                     goToAdminAnalyticsArr[0],
                     goToAdminPeopleArr[0],
-                    goToAdminTheatersArr[0]
+                    goToAdminTheatersArr[0],
+                    goToRegisterArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
@@ -209,7 +212,8 @@ public class GuiClient extends Application {
                     goToAdminScreeningsArr[0],
                     goToAdminAnalyticsArr[0],
                     goToAdminMoviesArr[0],
-                    goToAdminTheatersArr[0]
+                    goToAdminTheatersArr[0],
+                    goToRegisterArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };
@@ -222,7 +226,8 @@ public class GuiClient extends Application {
                     goToAdminScreeningsArr[0],
                     goToAdminAnalyticsArr[0],
                     goToAdminMoviesArr[0],
-                    goToAdminPeopleArr[0]
+                    goToAdminPeopleArr[0],
+                    goToRegisterArr[0]
             ).getScene());
             primaryStage.getScene().setFill(javafx.scene.paint.Color.web(LandingScreen.BG_COLOR));
         };

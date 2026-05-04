@@ -16,10 +16,12 @@ public class AdminMoviesScreen {
     private Runnable onAnalytics;
     private Runnable onPeople;
     private Runnable onTheaters;
+    private Runnable onRegister;
 
     public AdminMoviesScreen(Stage stage, GuiClient app, Runnable onBack,
                               Runnable onLogout, Runnable onScreenings,
-                              Runnable onAnalytics, Runnable onPeople, Runnable onTheaters) {
+                              Runnable onAnalytics, Runnable onPeople,
+                              Runnable onTheaters, Runnable onRegister) {
         this.stage       = stage;
         this.app         = app;
         this.onBack      = onBack;
@@ -28,6 +30,7 @@ public class AdminMoviesScreen {
         this.onAnalytics = onAnalytics;
         this.onPeople    = onPeople;
         this.onTheaters  = onTheaters;
+        this.onRegister = onRegister;
     }
 
     public Scene getScene() {
@@ -47,6 +50,7 @@ public class AdminMoviesScreen {
         Button moviesBtn     = navButton("Movies");
         Button peopleBtn     = navButton("People");
         Button theatersBtn   = navButton("Theaters");
+        Button registerBtn     = navButton("Register");
         Button logoutBtn     = navButton("Logout");
 
         moviesBtn.setStyle(moviesBtn.getStyle() +
@@ -58,13 +62,14 @@ public class AdminMoviesScreen {
         analyticsBtn.setOnAction(e ->  { if (onAnalytics != null) onAnalytics.run(); });
         peopleBtn.setOnAction(e ->     { if (onPeople != null) onPeople.run(); });
         theatersBtn.setOnAction(e ->   { if (onTheaters != null) onTheaters.run(); });
+        registerBtn.setOnAction(e ->     { if (onRegister != null) onRegister.run(); });
         logoutBtn.setOnAction(e ->     { if (onLogout != null) onLogout.run(); });
 
         Region navSpacer = new Region();
         HBox.setHgrow(navSpacer, Priority.ALWAYS);
 
         HBox navbar = new HBox(12, wordmark, navSpacer,
-            dashboardBtn, screeningsBtn, analyticsBtn, moviesBtn, peopleBtn, theatersBtn, logoutBtn);
+            dashboardBtn, screeningsBtn, analyticsBtn, moviesBtn, peopleBtn, theatersBtn, registerBtn, logoutBtn);
         navbar.setAlignment(Pos.CENTER_LEFT);
         navbar.setStyle(
             "-fx-padding: 16 40 16 40;" +
