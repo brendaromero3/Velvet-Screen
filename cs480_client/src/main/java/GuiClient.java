@@ -262,6 +262,7 @@ public class GuiClient extends Application {
     boolean isGuest() {
         return user_id == null || user_id <= 0;
     }
+
     // Checking if a user is an admin
     private boolean isAdmin(int id) {
         String query = "SELECT * FROM administrators WHERE user_id = ?;";
@@ -410,8 +411,6 @@ public class GuiClient extends Application {
         String query1 = "INSERT INTO users (user_id, email_address, password) VALUES (?, ?, ?)";
         String query2 = "INSERT INTO administrators (user_id) VALUES (?)";
         String query3 =  "INSERT INTO clients (user_id, name, address, interests) VALUES (?, ?, ?, ?)";
-        String query4 = "SELECT COALESCE(MAX(membership_id), 0) + 1 FROM membership";
-        String query5 = "INSERT INTO membership (membership_id, user_id, movies_watched, num_free_earned) VALUES (?, ?, 0, 0)";
 
         try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
@@ -443,18 +442,6 @@ public class GuiClient extends Application {
                         stmt.setString(4, interests);
                         stmt.executeUpdate();
                     }
-
-                    int newMembershipId;
-                    try (PreparedStatement stmt = conn.prepareStatement(query4)) {
-                        ResultSet rs = stmt.executeQuery();
-                        rs.next();
-                        newMembershipId = rs.getInt(1);
-                    }
-                    try (PreparedStatement stmt = conn.prepareStatement(query5)) {
-                        stmt.setInt(1, newMembershipId);
-                        stmt.setInt(2, newUserId);
-                        stmt.executeUpdate();
-                    }
                 }
 
                 conn.commit();
@@ -466,6 +453,59 @@ public class GuiClient extends Application {
                     System.out.println("Rollback error: " + ex);
                 }
                 System.out.println("Registration Error: " + e);
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Connection Error: " + e);
+            return false;
+        }
+    }
+
+    public boolean hasMembership() {
+        String query = "SELECT membership_id FROM membership WHERE user_id = ? FOR UPDATE;";
+
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, user_id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                    return rs.next();
+            }
+        } catch (Exception e) {
+            System.out.println("Error getting membership status: " + e.getMessage());
+        }
+        return false;
+
+    }
+
+    public boolean registerMembership(int user_id) {
+        String query1 = "SELECT COALESCE(MAX(membership_id), 0) + 1 FROM membership";
+        String query2 = "INSERT INTO membership (membership_id, user_id, movies_watched, num_free_earned) VALUES (?, ?, 0, 0)";
+
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                int newMembershipId;
+                try (PreparedStatement stmt = conn.prepareStatement(query1)) {
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    newMembershipId = rs.getInt(1);
+                }
+                try (PreparedStatement stmt = conn.prepareStatement(query2)) {
+                    stmt.setInt(1, newMembershipId);
+                    stmt.setInt(2, user_id);
+                    stmt.executeUpdate();
+                }
+                conn.commit();
+                return true;
+
+            } catch (Exception e) {
+                try {
+                    conn.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Rollback error: " + ex);
+                }
+                System.out.println("Membership Registration Error: " + e);
                 return false;
             }
         } catch (Exception e) {

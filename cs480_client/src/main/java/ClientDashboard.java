@@ -136,12 +136,41 @@ public class ClientDashboard {
         HBox rewardInfo = new HBox(6, rewardCount, rewardSub);
         rewardInfo.setAlignment(Pos.CENTER_LEFT);
 
-        double progress = app.getRewardProgress() / 10.0;
-        ProgressBar progressBar = new ProgressBar(progress);
-        progressBar.setPrefWidth(400);
-        progressBar.setStyle("-fx-accent: " + LandingScreen.SUCCESS_COLOR + ";");
+        VBox rewardBox = new VBox(6);
 
-        VBox rewardBox = new VBox(6, rewardTitle, rewardInfo, progressBar);
+        boolean hasMem = app.hasMembership();
+
+        if (hasMem) {
+            double progress = app.getRewardProgress() / 10.0;
+            ProgressBar progressBar = new ProgressBar(progress);
+            progressBar.setPrefWidth(400);
+            progressBar.setStyle("-fx-accent: " + LandingScreen.SUCCESS_COLOR + ";");
+
+            rewardBox.getChildren().addAll(rewardTitle, rewardInfo, progressBar);
+        } else {
+            Button signUpBtn = new Button("Sign Up For Rewards Today!");
+            signUpBtn.setStyle(
+                    "-fx-background-color: " + LandingScreen.PRIMARY_COLOR + ";" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-family: 'Questrial';" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-padding: 10 20 10 20;" +
+                            "-fx-border-radius: 4;" +
+                            "-fx-background-radius: 4;" +
+                            "-fx-cursor: hand;"
+            );
+            signUpBtn.setOnAction(e -> {
+                boolean success = app.registerMembership(app.user_id);
+
+                if (success) {
+                    stage.setScene(new ClientDashboard(stage, app, onLogout, onBrowse, onAccount, onPayments).getScene());
+                } else {
+                    System.out.println("Failed to register");
+                }
+            });
+
+            rewardBox.getChildren().addAll(rewardTitle, rewardInfo, signUpBtn);
+        }
 
         Label nowShowingTitle = new Label("NOW SHOWING");
         nowShowingTitle.setStyle(

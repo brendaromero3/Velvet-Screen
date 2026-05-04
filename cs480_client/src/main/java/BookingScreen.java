@@ -92,8 +92,6 @@ public class BookingScreen {
 
         CheckBox freeCheckBox = new CheckBox();
 
-//        int availableFreeTickets = app.freeTickets();
-
         freeCheckBox.setOnAction(e -> {
             useFreeTickets = freeCheckBox.isSelected();
 
@@ -113,8 +111,15 @@ public class BookingScreen {
             totalValueLbl.setText("$" + ticketTotal);
         });
 
-        HBox temp = new HBox(freeLbl, freeCheckBox);
-        VBox freeBox = new VBox(howManyLbl, temp);
+        boolean hasMem = app.hasMembership();
+
+        HBox temp = new HBox();
+        VBox freeBox = new VBox();
+
+        if (hasMem) {
+             temp.getChildren().addAll(freeLbl, freeCheckBox);
+             freeBox.getChildren().addAll(howManyLbl, temp);
+        }
 
         VBox ticketBox = new VBox(10, ticketLabel, ticketSpinner, freeBox);
 

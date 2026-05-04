@@ -227,10 +227,41 @@ public class ClientProfileScreen {
             "-fx-text-fill: " + LandingScreen.SUCCESS_COLOR + ";"
         );
 
-        double progress = app.getRewardProgress() / 10.0;
-        ProgressBar progressBar = new ProgressBar(progress);
-        progressBar.setPrefWidth(500);
-        progressBar.setStyle("-fx-accent: " + LandingScreen.SUCCESS_COLOR + ";");
+        VBox rewardBox = new VBox(6);
+
+        boolean hasMem = app.hasMembership();
+
+        if (hasMem) {
+            double progress = app.getRewardProgress() / 10.0;
+            ProgressBar progressBar = new ProgressBar(progress);
+            progressBar.setPrefWidth(400);
+            progressBar.setStyle("-fx-accent: " + LandingScreen.SUCCESS_COLOR + ";");
+
+            rewardBox.getChildren().addAll(progressBar);
+        } else {
+            Button signUpBtn = new Button("Sign Up For Rewards Today!");
+            signUpBtn.setStyle(
+                    "-fx-background-color: " + LandingScreen.PRIMARY_COLOR + ";" +
+                            "-fx-text-fill: white;" +
+                            "-fx-font-family: 'Questrial';" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-padding: 10 20 10 20;" +
+                            "-fx-border-radius: 4;" +
+                            "-fx-background-radius: 4;" +
+                            "-fx-cursor: hand;"
+            );
+            signUpBtn.setOnAction(e -> {
+                boolean success = app.registerMembership(app.user_id);
+
+                if (success) {
+                    stage.setScene(new ClientProfileScreen(stage, app, onBack, onLogout, onBrowse, onPayments, onRegister, onLogin).getScene());
+                } else {
+                    System.out.println("Failed to register");
+                }
+            });
+
+            rewardBox.getChildren().addAll(signUpBtn);
+        }
 
         Label errorLabel = new Label("");
         errorLabel.setStyle(
@@ -322,7 +353,7 @@ public class ClientProfileScreen {
             rewardSection,
             new Separator(),
             rewardCount,
-            progressBar,
+            rewardBox,
             new Region() {{ setPrefHeight(20); }},
             errorLabel,
             successLabel,
