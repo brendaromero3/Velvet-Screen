@@ -151,7 +151,7 @@ CREATE TABLE ticket_sale (
     num_tickets     integer NOT NULL CHECK (num_tickets >= 1),
     purchase_date   timestamp NOT NULL,
     total_price     numeric(10,2) NOT NULL CHECK (total_price >= 0),
-    card_number     text REFERENCES card_info(card_number),
+    card_number     text,
     PRIMARY KEY (sale_id)
 );
 
