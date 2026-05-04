@@ -495,7 +495,9 @@ public class GuiClient extends Application {
             params.add("%" + movieName + "%");
         }
         if (language != null && !language.isBlank()) {
-            query += " AND LOWER(m.original_language) = LOWER(?)";
+            query += " AND (LOWER(m.original_language) = LOWER(?)";
+            query += " OR EXISTS (SELECT 1 FROM movies_languages ml WHERE ml.movie_id = m.movie_id AND LOWER(ml.language) = LOWER(?)))";
+            params.add(language);
             params.add(language);
         }
         if (genre != null && !genre.isBlank()) {
