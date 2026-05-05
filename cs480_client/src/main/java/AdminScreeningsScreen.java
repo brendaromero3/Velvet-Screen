@@ -137,7 +137,7 @@ public class AdminScreeningsScreen {
         DatePicker datePicker = new DatePicker();
         datePicker.setPrefWidth(340);
 
-        Label timeLabel = new Label("TIME");
+        Label timeLabel = new Label("TIME (BETWEEN 08:00 AND 00:00)");
         timeLabel.setStyle(fieldLabelStyle());
         TextField timeField = new TextField();
         timeField.setPromptText("e.g. 19:30");
@@ -296,6 +296,21 @@ public class AdminScreeningsScreen {
                 return;
             }
 
+            String[] parts = time.split(":");
+            if (parts.length != 2) {
+                formError.setText("Invalid time format. Use HH:MM");
+                return;
+            }
+
+            int hour, min;
+            hour = Integer.parseInt(parts[0]);
+            min = Integer.parseInt(parts[1]);
+
+            if (hour < 8 || (hour == 20 &&  min > 0) || hour > 23) {
+                formError.setText("Screening time must be between 08:00 and 00:00");
+                return;
+            }
+
             int theaterId;
             try {
                 theaterId = Integer.parseInt(theaterIdStr);
@@ -305,6 +320,7 @@ public class AdminScreeningsScreen {
             }
 
             String date = datePicker.getValue().toString();
+
             boolean success = app.schedule(movieName, theaterId, date + " ", time + ":00");
 
             if (success) {
