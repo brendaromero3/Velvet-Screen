@@ -85,7 +85,7 @@ CREATE TABLE screening (
     screening_id    integer NOT NULL CHECK (screening_id > 0),
     movie_id        integer NOT NULL REFERENCES movies(movie_id),
     theater_id      integer NOT NULL REFERENCES theater(theater_id),
-    date_time       timestamp NOT NULL,
+    date_time       timestamp NOT NULL CHECK (date_time::time >= TIME '08:00' AND date_time::time < TIME '24:00'),
     seats_left      integer NOT NULL CHECK (seats_left >= 0),
     PRIMARY KEY (screening_id)
 );
