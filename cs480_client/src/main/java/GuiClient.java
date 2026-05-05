@@ -490,6 +490,7 @@ public class GuiClient extends Application {
                     ResultSet rs = stmt.executeQuery();
                     rs.next();
                     newMembershipId = rs.getInt(1);
+                    membership_id = newMembershipId;
                 }
                 try (PreparedStatement stmt = conn.prepareStatement(query2)) {
                     stmt.setInt(1, newMembershipId);
@@ -502,6 +503,7 @@ public class GuiClient extends Application {
             } catch (Exception e) {
                 try {
                     conn.rollback();
+                    membership_id = -1;
                 } catch (Exception ex) {
                     System.out.println("Rollback error: " + ex);
                 }
@@ -1235,7 +1237,7 @@ public class GuiClient extends Application {
                     return null;
                 }
 
-                if (!isGuest()) {
+                if (!isGuest() && membership_id != -1) {
                     int num_watched;
                     try (PreparedStatement stmt = conn.prepareStatement(lockMembership)) {
                         stmt.setInt(1, membership_id);
