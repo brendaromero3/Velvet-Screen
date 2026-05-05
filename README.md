@@ -33,7 +33,9 @@ You will also need Apache Maven: [Click here!](https://maven.apache.org/download
 > [!IMPORTANT]
 > Apache Maven is required to run the program, without it, you will not be able to run it (some IDEs may come with Maven already installed).
 
-Now onto running the program. There are two different ways to run the program:
+Now onto running the program. Only cs480_client needs to run for this project.
+
+There are two different ways to run the program:
 
 1. **Run Configuration<br/>**
 - First click "Run" on the top menu.
