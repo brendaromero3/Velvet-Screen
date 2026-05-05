@@ -37,53 +37,53 @@ CREATE TABLE awards (
 );
 
 CREATE TABLE awarded (
-    person_id   integer NOT NULL REFERENCES persons(person_id),
+    person_id   integer NOT NULL REFERENCES persons(person_id) ON DELETE CASCADE,
     award_id    integer NOT NULL REFERENCES awards(award_id),
-    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    movie_id    integer NOT NULL REFERENCES movies(movie_id) ON DELETE CASCADE,
     role        text,
     PRIMARY KEY (person_id, award_id, movie_id)
 );
 
 CREATE TABLE directors (
-    person_id   integer NOT NULL REFERENCES persons(person_id),
-    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    person_id   integer NOT NULL REFERENCES persons(person_id) ON DELETE CASCADE,
+    movie_id    integer NOT NULL REFERENCES movies(movie_id) ON DELETE CASCADE,
     PRIMARY KEY (person_id, movie_id)
 );
 
 CREATE TABLE actors (
-    person_id   integer NOT NULL REFERENCES persons(person_id),
-    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    person_id   integer NOT NULL REFERENCES persons(person_id) ON DELETE CASCADE,
+    movie_id    integer NOT NULL REFERENCES movies(movie_id) ON DELETE CASCADE,
     character_name  text,
     PRIMARY KEY (person_id, movie_id, character_name)
 );
 
 CREATE TABLE writers (
-    person_id   integer NOT NULL REFERENCES persons(person_id),
-    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    person_id   integer NOT NULL REFERENCES persons(person_id) ON DELETE CASCADE,
+    movie_id    integer NOT NULL REFERENCES movies(movie_id) ON DELETE CASCADE,
     PRIMARY KEY (person_id, movie_id)
 );
 
 CREATE TABLE producers (
-    person_id   integer NOT NULL REFERENCES persons(person_id),
-    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    person_id   integer NOT NULL REFERENCES persons(person_id) ON DELETE CASCADE,
+    movie_id    integer NOT NULL REFERENCES movies(movie_id) ON DELETE CASCADE,
     PRIMARY KEY (person_id, movie_id)
 );
 
 CREATE TABLE movies_languages (
     language    text NOT NULL,
-    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    movie_id    integer NOT NULL REFERENCES movies(movie_id) ON DELETE CASCADE,
     PRIMARY KEY (language, movie_id)
 );
 
 CREATE TABLE movies_genre (
     genre       text NOT NULL,
-    movie_id    integer NOT NULL REFERENCES movies(movie_id),
+    movie_id    integer NOT NULL REFERENCES movies(movie_id) ON DELETE CASCADE,
     PRIMARY KEY (genre, movie_id)
 );
 
 CREATE TABLE screening (
     screening_id    integer NOT NULL CHECK (screening_id > 0),
-    movie_id        integer NOT NULL REFERENCES movies(movie_id),
+    movie_id        integer NOT NULL REFERENCES movies(movie_id) ON DELETE CASCADE,
     theater_id      integer NOT NULL REFERENCES theater(theater_id),
     date_time       timestamp NOT NULL CHECK (date_time::time >= TIME '08:00' AND date_time::time < TIME '24:00'),
     seats_left      integer NOT NULL CHECK (seats_left >= 0),
@@ -98,8 +98,8 @@ CREATE TABLE users (
 );
 
 CREATE TABLE Reviews (
-    user_id         integer NOT NULL REFERENCES users(user_id),
-    movie_id        integer NOT NULL REFERENCES movies(movie_id),
+    user_id         integer NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    movie_id        integer NOT NULL REFERENCES movies(movie_id) ON DELETE CASCADE,
     rating          integer NOT NULL CHECK (rating BETWEEN 0 AND 5),
     comment         text,
     PRIMARY KEY (user_id, movie_id)
@@ -147,7 +147,7 @@ CREATE TABLE credit (
 CREATE TABLE ticket_sale (
     sale_id         integer NOT NULL CHECK (sale_id > 0),
     user_id         integer REFERENCES users(user_id),
-    screening_id    integer NOT NULL REFERENCES screening(screening_id),
+    screening_id    integer NOT NULL REFERENCES screening(screening_id) ON DELETE CASCADE,
     num_tickets     integer NOT NULL CHECK (num_tickets >= 1),
     purchase_date   timestamp NOT NULL,
     total_price     numeric(10,2) NOT NULL CHECK (total_price >= 0),
