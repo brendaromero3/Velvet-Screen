@@ -1431,20 +1431,24 @@ public class GuiClient extends Application {
         try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
 
-            try {
-                try (PreparedStatement stmt = conn.prepareStatement(
-                        query)) {
-                    stmt.setInt(1, movieId);
-                    stmt.executeUpdate();
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, movieId);
+                int rows = stmt.executeUpdate();
+
+                if (rows == 0) {
+                    conn.rollback();
+                    return false;
                 }
+
                 conn.commit();
                 return true;
             } catch (Exception e) {
                 try {
                     conn.rollback();
                 } catch (Exception ex) {
-                    System.out.println("Rollback error: " + ex);
+                    System.out.println("Rollback Error: " + ex);
                 }
+                System.out.println("Delete movie failed: " + e.getMessage());
                 return false;
             }
         } catch (Exception e) {
