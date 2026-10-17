@@ -63,4 +63,4 @@ mvn clean compile exec:java
 > Creating a Run Configuration is recommended if you will be running the program multiple times!
 
 > [!IMPORTANT]
-> Before running the program, go to the GuiClient.java file and on line 254, replace the user and password with your own posrgres username and password.
+> Before running the program, go to the GuiClient.java file and on line 254, replace the user and password with your own Postgres username and password.
